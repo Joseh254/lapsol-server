@@ -34,24 +34,42 @@ export async function LoginController(request, response) {
       role: userExists.role,
     };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "1d",
+    // Generate short-lived access token
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "15m",
       algorithm: "HS256",
     });
 
-    response
-      .cookie("access_token", token, {
+    // Generate long-lived refresh token
+    const refreshToken = jwt.sign({ id: userExists.id }, process.env.JWT_REFRESH_SECRET, {
+      expiresIn: "7d",
+      algorithm: "HS256",
+    });
+
+    // Store refresh token in DB
+    await prisma.users.update({
+      where: { id: userExists.id },
+      data: { refreshToken },
+    });
+
+    response 
+      .cookie("access_token", accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "Strict",
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
+        maxAge: 15 * 60 * 1000, // 15 minutes
+      })
+      .cookie("refresh_token", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
       .json({
         success: true,
         message: "Logged in successfully",
         data: payload,
       });
-
   } catch (error) {
     console.error("Error logging in user:", error.message);
     return response
