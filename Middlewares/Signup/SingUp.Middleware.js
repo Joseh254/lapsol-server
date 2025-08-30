@@ -2,11 +2,19 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function SignUpMiddleware(request, response, next) {
-  const { email, firstname, lastname, username, phonenumber, password } = request.body;
+  const { email, firstname, lastname, username, phonenumber, password } =
+    request.body;
 
   try {
     // Validate that all fields are provided
-    if (!email || !firstname || !lastname || !username || !phonenumber || !password) {
+    if (
+      !email ||
+      !firstname ||
+      !lastname ||
+      !username ||
+      !phonenumber ||
+      !password
+    ) {
       return response.status(400).json({
         success: false,
         message: "All fields are required!",
@@ -60,11 +68,13 @@ export async function SignUpMiddleware(request, response, next) {
     }
 
     // Password validation for complexity
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
     if (!passwordRegex.test(password)) {
       return response.status(400).json({
         success: false,
-        message: "Password must be at least 8 characters long, include at least one lowercase letter, one uppercase letter, and one special character.",
+        message:
+          "Password must be at least 8 characters long, include at least one lowercase letter, one uppercase letter, and one special character.",
       });
     }
 
