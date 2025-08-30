@@ -1,3 +1,7 @@
+import { PrismaClient } from '@prisma/client'
+import jwt from 'jsonwebtoken'
+
+const prisma = new PrismaClient()
 export async function RefreshTokenController(request, response) {
   const refreshToken = request.cookies.refresh_token;
 

@@ -5,9 +5,9 @@ import cors from 'cors'
 
 import login from "./Routes/Login/Login.Route.js";
 import signup from "./Routes/SignUp/SignUp.Route.js";
-// import logout from './Routes/Logout/Logout.Route.js'
+import logout from './Routes/Logout/Logout.Route.js'
 import reflesh from './Routes/RefleshToken/RefleshToken.Route.js'
-
+import fetchAllUsers from './Routes/FetchAllUsers/FetchAllUsers.Route.js'
 
 dotenv.config();
 
@@ -22,10 +22,15 @@ app.use(cors({
 app.get("/", (req, res) => {
   res.send("Welcome to jovatech server!");
 });
+
+
 app.use("/api/login", login);
 app.use("/api/signup", signup);
 app.use('/api/reflesh',reflesh)
-// app.use('/api/logout',logout)
+app.use('/api/logout',logout)
+app.use('/api/fetchallUsers',fetchAllUsers)
+
+
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });
