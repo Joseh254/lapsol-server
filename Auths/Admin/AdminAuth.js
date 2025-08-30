@@ -1,7 +1,7 @@
 import jwt,{decode} from 'jsonwebtoken'
 function AdminAuth(request,response,next){
     const accessToken = request.cookies.access_token
-    if(!accessToken){return response.status(401).json({success:false, message:"Access Denied! unauthorized"})}
+    if(!accessToken){return response.status(401).json({success:false, message:"Please login first to continue"})}
     
     try {
       jwt.verify(accessToken,process.env.JWT_SECRET,function(error,decoded){
