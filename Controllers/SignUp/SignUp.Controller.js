@@ -1,10 +1,12 @@
 import { PrismaClient } from "@prisma/client";
-
+import bcrypt from 'bcrypt'
 const prisma = new PrismaClient();
 
 export async function SignUpController(request, response) {
   const { email, firstname, lastname, username, phonenumber, password } =
     request.body;
+
+    const hashedPassword = bcrypt.hashSync(password,10)
 
   try {
     const createdUser = await prisma.users.create({
@@ -14,8 +16,18 @@ export async function SignUpController(request, response) {
         lastname,
         username,
         phonenumber,
-        password,
+        password:hashedPassword,
       },
+      select:{
+        email:true,
+        firstname:true,
+        lastname:true,
+        username:true,
+        phonenumber:true,
+        role:true,
+        createdAt: true,
+        updatedAt: true,
+      }
     });
 
     response.status(200).json({
