@@ -2,30 +2,33 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function UpdateProfileController(request, response) {
-  const { email, firstname, lastname, username, phonenumber, password } =
-    request.body;
+  const { email, firstname, lastname, username, phonenumber, password } = request.body;
+ 
 
-    try {
-        const {id } = request.params
-        const user = await prisma.users.findUnique({where:{id:id}})
-        if( !user){return response.status(400).json({success:false,message:"User not found"})}
-        const updateduser = await prisma.users.update({
-            where:{id:id},
-            data:{
-                email:email || user.email,
-                phonenumber: phonenumber || user.phonenumber,
-                firstname:firstname || user.firstname,
-                lastname:lastname || user.lastname,
-                username: username || user.username,
-                password: password|| user.password
-            }
-        
-        })
-        response.send(updateduser)
+  try {
+    const updatedUser = await prisma.users.update({
+      where: { id:request.user.id },
+      data: {
+        ...(email && { email }),
+        ...(firstname && { firstname }),
+        ...(lastname && { lastname }),
+        ...(username && { username }),
+        ...(phonenumber && { phonenumber }),
+        ...(password && { password }),
+      },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        firstname: true,
+        lastname: true,
+        phonenumber: true,
+      },
+    });
 
-    } catch (error) {
-        console.log('error updating profile',error.message);
-        return response.status(500).json({success:false, message:"Internal server error!"})
-        
-    }
+    return response.status(200).json({success:true,message:"Profile Updated", data:updatedUser})
+  } catch (error) {
+    console.log("Error updating profile:", error.message);
+    return response.status(500).json({ success: false, message: "Internal server error!" });
+  }
 }
