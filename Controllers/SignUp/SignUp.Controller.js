@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 export async function SignUpController(request, response) {
-  const { email, firstname, lastname, username, phonenumber, password} =
+  const { email, firstname, lastname, username, phonenumber, password, role } =
     request.body;
 
   const hashedPassword = bcrypt.hashSync(password, 10);
@@ -16,8 +16,8 @@ export async function SignUpController(request, response) {
         lastname,
         username,
         phonenumber,
+        role,
         password: hashedPassword,
-    
       },
       select: {
         email: true,

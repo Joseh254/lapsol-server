@@ -41,10 +41,14 @@ export async function LoginController(request, response) {
     });
 
     // Generate long-lived refresh token
-    const refreshToken = jwt.sign({ id: userExists.id }, process.env.JWT_REFRESH_SECRET, {
-      expiresIn: "7d",
-      algorithm: "HS256",
-    });
+    const refreshToken = jwt.sign(
+      { id: userExists.id },
+      process.env.JWT_REFRESH_SECRET,
+      {
+        expiresIn: "7d",
+        algorithm: "HS256",
+      },
+    );
 
     // Store refresh token in DB
     await prisma.users.update({
@@ -52,7 +56,7 @@ export async function LoginController(request, response) {
       data: { refreshToken },
     });
 
-    response 
+    response
       .cookie("access_token", accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",

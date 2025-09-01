@@ -1,6 +1,6 @@
-import { PrismaClient} from '@prisma/client'
+import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export async function LogoutController(request, response) {
   const refreshToken = request.cookies.refresh_token;

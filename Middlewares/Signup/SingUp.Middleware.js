@@ -66,7 +66,17 @@ export async function SignUpMiddleware(request, response, next) {
         message: "Phone number must be exactly 10 digits",
       });
     }
-
+    const userWithPhoneExists = await prisma.users.findFirst({
+      where: { phonenumber: phonenumber },
+    });
+    if (userWithPhoneExists) {
+      return response
+        .status(500)
+        .json({
+          success: false,
+          message: "User with phone number already exists!",
+        });
+    }
     // Password validation for complexity
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;

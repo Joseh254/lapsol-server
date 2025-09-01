@@ -3,6 +3,6 @@ import { LoginController } from "../../Controllers/LoginController/Login.Control
 import { loginMiddleware } from "../../Middlewares/Login/Login.Middleware.js";
 const router = Router();
 
-router.post("/",loginMiddleware, LoginController);
+router.post("/", loginMiddleware, LoginController);
 
 export default router;

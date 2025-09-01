@@ -1,12 +1,14 @@
-import { PrismaClient } from '@prisma/client'
-import jwt from 'jsonwebtoken'
+import { PrismaClient } from "@prisma/client";
+import jwt from "jsonwebtoken";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 export async function RefreshTokenController(request, response) {
   const refreshToken = request.cookies.refresh_token;
 
   if (!refreshToken) {
-    return response.status(401).json({ success: false, message: "No refresh token" });
+    return response
+      .status(401)
+      .json({ success: false, message: "No refresh token" });
   }
 
   try {
@@ -16,13 +18,17 @@ export async function RefreshTokenController(request, response) {
     });
 
     if (!user) {
-      return response.status(403).json({ success: false, message: "Invalid refresh token" });
+      return response
+        .status(403)
+        .json({ success: false, message: "Invalid refresh token" });
     }
 
     // Verify refresh token
     jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, decoded) => {
       if (err) {
-        return response.status(403).json({ success: false, message: "Invalid refresh token" });
+        return response
+          .status(403)
+          .json({ success: false, message: "Invalid refresh token" });
       }
 
       const payload = {
@@ -51,6 +57,8 @@ export async function RefreshTokenController(request, response) {
     });
   } catch (error) {
     console.error("Error refreshing token:", error.message);
-    return response.status(500).json({ success: false, message: "Internal server error!" });
+    return response
+      .status(500)
+      .json({ success: false, message: "Internal server error!" });
   }
 }

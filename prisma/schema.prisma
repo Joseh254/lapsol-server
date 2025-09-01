@@ -19,7 +19,7 @@ model users {
   firstname   String
   lastname    String
   username    String
-  phonenumber String
+  phonenumber String @unique
   password    String
   role        String?  @default("user")
   createdAt   DateTime @default(now())
