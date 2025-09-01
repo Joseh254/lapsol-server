@@ -6,7 +6,23 @@ export async function UpdateProfileController(request, response) {
     request.body;
 
     try {
-        response.send("sucess up to that point")
+        const {id } = request.params
+        const user = await prisma.users.findUnique({where:{id:id}})
+        if( !user){return response.status(400).json({success:false,message:"User not found"})}
+        const updateduser = await prisma.users.update({
+            where:{id:id},
+            data:{
+                email:email || user.email,
+                phonenumber: phonenumber || user.phonenumber,
+                firstname:firstname || user.firstname,
+                lastname:lastname || user.lastname,
+                username: username || user.username,
+                password: password|| user.password
+            }
+        
+        })
+        response.send(updateduser)
+
     } catch (error) {
         console.log('error updating profile',error.message);
         return response.status(500).json({success:false, message:"Internal server error!"})

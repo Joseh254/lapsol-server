@@ -6,6 +6,6 @@ import { UserAuth } from "../../Auths/User/UserAuth.js";
 
 const router = Router();
 
-router.patch("/",UserAuth,UpdateProfileMiddleware, UpdateProfileController);
+router.patch("/:id",UserAuth,UpdateProfileMiddleware, UpdateProfileController);
 
 export default router;
