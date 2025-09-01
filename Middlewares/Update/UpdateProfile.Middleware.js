@@ -1,10 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { use } from "react";
 const prisma = new PrismaClient();
 
-export default async function UpdateProfileMiddleware(request, response, next) {
+export  async function UpdateProfileMiddleware(request, response, next) {
   const { email, firstname, lastname, username, phonenumber, password } =
-    request.body();
+    request.body;
   try {
     if (
       !email ||
@@ -18,6 +17,10 @@ export default async function UpdateProfileMiddleware(request, response, next) {
         .status(400)
         .json({ success: false, message: "All fields are required!" });
     }
+
+
+    
+    next()
   } catch (error) {
     console.log("error in updating profile middleware", error.message);
     return response
