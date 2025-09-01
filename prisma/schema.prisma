@@ -37,3 +37,11 @@ model RefreshToken {
   expiresAt DateTime
 }
 
+model products{
+  id String @id @default(uuid()) @unique
+  productname String @unique
+  price String
+  details String
+  quantity Int
+  
+  }

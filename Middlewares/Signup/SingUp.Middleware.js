@@ -31,24 +31,24 @@ export async function SignUpMiddleware(request, response, next) {
     }
 
     // Validate length of fields
-    if (firstname.length < 2) {
+    if (firstname.length < 4 || firstname.length>20) {
       return response.status(400).json({
         success: false,
-        message: "First name must be at least 2 characters",
+        message: "first name must be between 4 and 20 characters",
       });
     }
 
-    if (lastname.length < 2) {
+    if (lastname.length < 4 || lastname.length > 20) {
       return response.status(400).json({
         success: false,
-        message: "Last name must be at least 2 characters",
+        message: "Last name must be between 4 and 20 characters",
       });
     }
 
-    if (username.length < 3 || username.length > 20) {
+    if (username.length < 5 || username.length > 20) {
       return response.status(400).json({
         success: false,
-        message: "Username must be between 3 and 20 characters",
+        message: "Username must be between 5 and 20 characters",
       });
     }
 
