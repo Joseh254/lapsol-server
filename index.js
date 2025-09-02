@@ -9,9 +9,9 @@ import logout from "./Routes/Logout/Logout.Route.js";
 import reflesh from "./Routes/RefleshToken/RefleshToken.Route.js";
 import fetchAllUsers from "./Routes/FetchAllUsers/FetchAllUsers.Route.js";
 import updateprofile from "./Routes/UpdateProfile/UpdateProfileRoutr.js";
-import deleteproduct from './Routes/DeleteProduct/DeleteProduct.Route.js';
-import updateproduct from './Routes/UpdateProduct/UpdateProduct.Route.js';
-import addproduct from './Routes/AddProduct/AddProduct.Route.js'
+import deleteproduct from "./Routes/DeleteProduct/DeleteProduct.Route.js";
+import updateproduct from "./Routes/UpdateProduct/UpdateProduct.Route.js";
+import addproduct from "./Routes/AddProduct/AddProduct.Route.js";
 
 dotenv.config();
 
@@ -29,27 +29,23 @@ app.get("/", (req, res) => {
   res.send("Welcome to jovatech server!");
 });
 
-
 app.use("/api/login", login);
 app.use("/api/signup", signup);
 app.use("/api/reflesh", reflesh);
 app.use("/api/logout", logout);
 app.use("/api/fetchallUsers", fetchAllUsers);
 app.use("/api/updateprofile", updateprofile);
-app.use('/api/deleteproduct',deleteproduct);
-app.use('/api/updateproduct',updateproduct);
-app.use('/api/addproduct',addproduct)
+app.use("/api/deleteproduct", deleteproduct);
+app.use("/api/updateproduct", updateproduct);
+app.use("/api/addproduct", addproduct);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
-
-
-  
 });
 
 // add products to database
 //edit product
-//sell products to customers on credit 
+//sell products to customers on credit
 //view customer balances for individual customer
 //when customer pay it deduct from balances
 // receive products from other sellers on credit

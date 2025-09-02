@@ -31,7 +31,7 @@ export async function SignUpMiddleware(request, response, next) {
     }
 
     // Validate length of fields
-    if (firstname.length < 4 || firstname.length>20) {
+    if (firstname.length < 4 || firstname.length > 20) {
       return response.status(400).json({
         success: false,
         message: "first name must be between 4 and 20 characters",
@@ -70,12 +70,10 @@ export async function SignUpMiddleware(request, response, next) {
       where: { phonenumber: phonenumber },
     });
     if (userWithPhoneExists) {
-      return response
-        .status(500)
-        .json({
-          success: false,
-          message: "User with phone number already exists!",
-        });
+      return response.status(500).json({
+        success: false,
+        message: "User with phone number already exists!",
+      });
     }
     // Password validation for complexity
     const passwordRegex =

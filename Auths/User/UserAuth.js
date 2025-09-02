@@ -9,8 +9,8 @@ export function UserAuth(request, response, next) {
         .status(401)
         .json({ success: false, message: "Please log in first to continue" });
     }
-    const decoded = jwt.verify(accessToken,process.env.JWT_SECRET)
-    request.user=decoded
+    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+    request.user = decoded;
     next();
   } catch (error) {
     console.log("error userauth ", error.message);

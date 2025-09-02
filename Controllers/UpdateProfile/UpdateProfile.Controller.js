@@ -2,12 +2,12 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function UpdateProfileController(request, response) {
-  const { email, firstname, lastname, username, phonenumber, password } = request.body;
- 
+  const { email, firstname, lastname, username, phonenumber, password } =
+    request.body;
 
   try {
     const updatedUser = await prisma.users.update({
-      where: { id:request.user.id },
+      where: { id: request.user.id },
       data: {
         ...(email && { email }),
         ...(firstname && { firstname }),
@@ -26,9 +26,13 @@ export async function UpdateProfileController(request, response) {
       },
     });
 
-    return response.status(200).json({success:true,message:"Profile Updated", data:updatedUser})
+    return response
+      .status(200)
+      .json({ success: true, message: "Profile Updated", data: updatedUser });
   } catch (error) {
     console.log("Error updating profile:", error.message);
-    return response.status(500).json({ success: false, message: "Internal server error!" });
+    return response
+      .status(500)
+      .json({ success: false, message: "Internal server error!" });
   }
 }
