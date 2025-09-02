@@ -14,6 +14,8 @@ import updateproduct from "./Routes/UpdateProduct/UpdateProduct.Route.js";
 import addproduct from "./Routes/AddProduct/AddProduct.Route.js";
 import fetchallproducts from "./Routes/FetchAllProducts/FetchAllProducts.Route.js";
 import fetchoneproduct from "./Routes/FetchOneProduct/FetchOneProduct.Route.js";
+import addcustomer from "./Routes/AddCustomer/AddCustomer.Route.js";
+import updatecustomer from "./Routes/UpdateCustomer/UpdateCustomer.Route.js";
 
 dotenv.config();
 
@@ -42,16 +44,21 @@ app.use("/api/updateproduct", updateproduct);
 app.use("/api/addproduct", addproduct);
 app.use("/api/fetchallproducts", fetchallproducts);
 app.use("/api/fetchoneproduct", fetchoneproduct);
+app.use("/api/addcustomer", addcustomer);
+app.use("/api/updatecustomer", updatecustomer);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });
 
-// add products to database
-//edit product
 //sell products to customers on credit
 //view customer balances for individual customer
 //when customer pay it deduct from balances
 // receive products from other sellers on credit
 // sell products on cash to customers
 // create account for customers
+//surpose im creating a system to sell products to customers on dept,
+// i can view their balances,once i sell product it should deduct from database,
+// ,they can return product and adjust database records,,when they pay,
+// ,system should adjust balances,,i can view individual customer balances,,
+// which user was logged in at that time,

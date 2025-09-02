@@ -46,3 +46,14 @@ model products{
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   }
+
+  model customers {
+  id          String   @id @default(uuid()) @unique
+  name   String
+  location String
+  details String?
+  phonenumber String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+}
