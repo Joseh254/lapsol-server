@@ -12,6 +12,8 @@ import updateprofile from "./Routes/UpdateProfile/UpdateProfileRoutr.js";
 import deleteproduct from "./Routes/DeleteProduct/DeleteProduct.Route.js";
 import updateproduct from "./Routes/UpdateProduct/UpdateProduct.Route.js";
 import addproduct from "./Routes/AddProduct/AddProduct.Route.js";
+import fetchallproducts from "./Routes/FetchAllProducts/FetchAllProducts.Route.js";
+import fetchoneproduct from "./Routes/FetchOneProduct/FetchOneProduct.Route.js";
 
 dotenv.config();
 
@@ -38,6 +40,8 @@ app.use("/api/updateprofile", updateprofile);
 app.use("/api/deleteproduct", deleteproduct);
 app.use("/api/updateproduct", updateproduct);
 app.use("/api/addproduct", addproduct);
+app.use("/api/fetchallproducts", fetchallproducts);
+app.use("/api/fetchoneproduct", fetchoneproduct);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);

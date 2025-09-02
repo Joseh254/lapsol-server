@@ -20,12 +20,10 @@ export async function UpdateProductController(request, response) {
         quantity: true,
       },
     });
-    return response
-      .status(200)
-      .json({
-        success: true,
-        message: `${updatedProduct.productname} updated succesfully`,
-      });
+    return response.status(200).json({
+      success: true,
+      message: `${updatedProduct.productname} updated succesfully`,
+    });
   } catch (error) {
     console.log("error updating product", error.message);
     return response
