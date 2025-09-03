@@ -26,12 +26,10 @@ export async function CreateSale(request, response) {
           .json({ success: false, message: `Product  not found` });
       }
       if (product.quantity < item.quantity) {
-        return response
-          .status(400)
-          .json({
-            success: false,
-            message: `Not enough stock for ${product.productname}`,
-          });
+        return response.status(400).json({
+          success: false,
+          message: `Not enough stock for ${product.productname}`,
+        });
       }
 
       const lineTotal = product.price * item.quantity;

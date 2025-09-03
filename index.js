@@ -18,6 +18,7 @@ import addcustomer from "./Routes/AddCustomer/AddCustomer.Route.js";
 import updatecustomer from "./Routes/UpdateCustomer/UpdateCustomer.Route.js";
 import createsale from "./Routes/CreateSale/CreateSale.Route.js";
 import viewcustomerbalance from "./Routes/ViewCustomerBalance/ViewCustomerBalance.Route.js";
+import returnproduct from "./Routes/ReturnProduct/ReturnProduct.Route.js";
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ app.use("/api/addcustomer", addcustomer);
 app.use("/api/updatecustomer", updatecustomer);
 app.use("/api/createsale", createsale);
 app.use("/api/viewcustomerbalance", viewcustomerbalance);
+app.use("/api/returnproduct", returnproduct);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
