@@ -25,7 +25,7 @@ model users {
   updatedAt     DateTime       @updatedAt
   refreshToken  String?
   refreshTokens RefreshToken[]
-  sales         Sale[]         // one-to-many: user → sales
+  sales         sale[]         // one-to-many: user → sales
 }
 
 model RefreshToken {
@@ -45,7 +45,7 @@ model products {
   quantity    Int         @default(5)  
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  saleItems   SaleItem[]  // product can appear in many sale items
+  saleItems   saleitem[]  // product can appear in many sale items
 }
 
 model customers {
@@ -56,10 +56,10 @@ model customers {
   phonenumber String      @unique
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  sales       Sale[]      // one-to-many: customer → sales
+  sales       sale[]      // one-to-many: customer → sales
 }
 
-model Sale {
+model sale {
   id         String      @id @default(uuid())
   createdAt  DateTime    @default(now())
   type       String      // "cash" or "credit"
@@ -69,25 +69,25 @@ model Sale {
   customerId String
   user       users       @relation(fields: [userId], references: [id])
   customer   customers   @relation(fields: [customerId], references: [id])
-  saleItems  SaleItem[]
-  payments   Payment[]   // track payments made toward this sale
+  saleItems  saleitem[]
+  payments   payment[]   // track payments made toward this sale
 }
 
-model SaleItem {
+model saleitem {
   id        String    @id @default(uuid())
   saleId    String
   productId String
   quantity  Int
   unitPrice Int       // snapshot of product price at time of sale
-  sale      Sale      @relation(fields: [saleId], references: [id])
+  sale      sale      @relation(fields: [saleId], references: [id])
   product   products  @relation(fields: [productId], references: [id])
 }
 
-model Payment {
+model payment {
   id        String   @id @default(uuid())
   amount    Int
   createdAt DateTime @default(now())
   saleId    String
-  sale      Sale     @relation(fields: [saleId], references: [id])
+  sale      sale     @relation(fields: [saleId], references: [id])
 }
 //
