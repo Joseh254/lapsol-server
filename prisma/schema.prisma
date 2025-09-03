@@ -12,24 +12,24 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
 model users {
-  id          String   @id @default(uuid()) @unique
-  email       String   @unique
-  firstname   String
-  lastname    String
-  username    String
-  phonenumber String @unique
-  password    String
-  role        String?  @default("user")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  refreshToken String?
+  id            String         @id @default(uuid())
+  email         String         @unique
+  firstname     String
+  lastname      String
+  username      String
+  phonenumber   String         @unique
+  password      String
+  role          String?        @default("user")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  refreshToken  String?
   refreshTokens RefreshToken[]
-} 
+  sales         Sale[]         // one-to-many: user → sales
+}
 
 model RefreshToken {
-  id        String   @id @default(uuid()) @unique
+  id        String   @id @default(uuid())
   token     String   @unique
   userId    String
   user      users    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -37,23 +37,57 @@ model RefreshToken {
   expiresAt DateTime
 }
 
-model products{
-  id String @id @default(uuid()) @unique
-  productname String @unique
-  price Int
-  details String
-  quantity Int @default(5)  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  }
-
-  model customers {
-  id          String   @id @default(uuid()) @unique
-  name   String
-  location String
-  details String?
-  phonenumber String   @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
+model products {
+  id          String      @id @default(uuid())
+  productname String      @unique
+  price       Int
+  details     String
+  quantity    Int         @default(5)  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  saleItems   SaleItem[]  // product can appear in many sale items
 }
+
+model customers {
+  id          String      @id @default(uuid())
+  name        String
+  location    String
+  details     String?
+  phonenumber String      @unique
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  sales       Sale[]      // one-to-many: customer → sales
+}
+
+model Sale {
+  id         String      @id @default(uuid())
+  createdAt  DateTime    @default(now())
+  type       String      // "cash" or "credit"
+  total      Int
+  balance    Int         // remaining balance if credit
+  userId     String
+  customerId String
+  user       users       @relation(fields: [userId], references: [id])
+  customer   customers   @relation(fields: [customerId], references: [id])
+  saleItems  SaleItem[]
+  payments   Payment[]   // track payments made toward this sale
+}
+
+model SaleItem {
+  id        String    @id @default(uuid())
+  saleId    String
+  productId String
+  quantity  Int
+  unitPrice Int       // snapshot of product price at time of sale
+  sale      Sale      @relation(fields: [saleId], references: [id])
+  product   products  @relation(fields: [productId], references: [id])
+}
+
+model Payment {
+  id        String   @id @default(uuid())
+  amount    Int
+  createdAt DateTime @default(now())
+  saleId    String
+  sale      Sale     @relation(fields: [saleId], references: [id])
+}
+//
