@@ -24,12 +24,10 @@ export async function UpdateCustomerController(request, response) {
         updatedAt: true,
       },
     });
-    return response
-      .status(201)
-      .json({
-        success: true,
-        message: `${updatedCustomer.name} details updated`,
-      });
+    return response.status(201).json({
+      success: true,
+      message: `${updatedCustomer.name} details updated`,
+    });
   } catch (error) {
     console.log("error updating customer details");
     return response

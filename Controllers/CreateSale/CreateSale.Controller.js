@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function CreateSale(request, response) {
@@ -6,11 +6,10 @@ export async function CreateSale(request, response) {
 
   try {
     // 1. Extract userId from cookie
-    const userId = request.user.id; 
+    const userId = request.user.id;
 
-    
-     // 2. Fetch products
-    const productIds = items.map(i => i.productId);
+    // 2. Fetch products
+    const productIds = items.map((index) => index.productId);
     const products = await prisma.products.findMany({
       where: { id: { in: productIds } },
     });
@@ -20,12 +19,19 @@ export async function CreateSale(request, response) {
     const saleItemsData = [];
 
     for (const item of items) {
-      const product = products.find(p => p.id === item.productId);
+      const product = products.find((p) => p.id === item.productId);
       if (!product) {
-        return response.status(400).json({ success: false, message: `Product ${item.productId} not found` });
+        return response
+          .status(400)
+          .json({ success: false, message: `Product  not found` });
       }
       if (product.quantity < item.quantity) {
-        return response.status(400).json({ success: false, message: `Not enough stock for ${product.productname}` });
+        return response
+          .status(400)
+          .json({
+            success: false,
+            message: `Not enough stock for ${product.productname}`,
+          });
       }
 
       const lineTotal = product.price * item.quantity;
@@ -62,6 +68,8 @@ export async function CreateSale(request, response) {
     return response.status(201).json({ success: true, data: sale });
   } catch (error) {
     console.error("Error creating sale:", error.message);
-    return response.status(500).json({ success: false, message: "Internal server error!" });
+    return response
+      .status(500)
+      .json({ success: false, message: "Internal server error!" });
   }
 }
