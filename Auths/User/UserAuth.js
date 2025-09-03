@@ -12,7 +12,7 @@ export function UserAuth(request, response, next) {
     const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
     request.user = decoded;
     next();
-  } catch (error) {
+  } catch (error) { 
     console.log("error userauth ", error.message);
     return response
       .status(500)

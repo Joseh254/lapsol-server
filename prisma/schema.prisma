@@ -62,7 +62,7 @@ model customers {
 model sale {
   id         String      @id @default(uuid())
   createdAt  DateTime    @default(now())
-  type       String      // "cash" or "credit"
+  type       String?  @default("credit")    // "cash" or "credit"
   total      Int
   balance    Int         // remaining balance if credit
   userId     String

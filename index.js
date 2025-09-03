@@ -16,7 +16,7 @@ import fetchallproducts from "./Routes/FetchAllProducts/FetchAllProducts.Route.j
 import fetchoneproduct from "./Routes/FetchOneProduct/FetchOneProduct.Route.js";
 import addcustomer from "./Routes/AddCustomer/AddCustomer.Route.js";
 import updatecustomer from "./Routes/UpdateCustomer/UpdateCustomer.Route.js";
-
+import createsale from './Routes/CreateSale/CreateSale.Route.js'
 dotenv.config();
 
 const app = express();
@@ -46,6 +46,7 @@ app.use("/api/fetchallproducts", fetchallproducts);
 app.use("/api/fetchoneproduct", fetchoneproduct);
 app.use("/api/addcustomer", addcustomer);
 app.use("/api/updatecustomer", updatecustomer);
+app.use('/api/createsale',createsale)
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
