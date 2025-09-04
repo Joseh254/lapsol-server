@@ -4,43 +4,74 @@ const prisma = new PrismaClient();
 
 export const ViewCustomerBalanceController = async (request, response) => {
   try {
-    const { customerId } = request.params;
+    const { id: customerId } = request.params;
 
+    // 1. Ensure customer exists
+    const customer = await prisma.customers.findUnique({
+      where: { id: customerId },
+      select: { id: true, name: true },
+    });
+
+    if (!customer) {
+      return response.status(404).json({
+        success: false,
+        message: "Customer not found",
+      });
+    }
+
+    // 2. Get sales + saleItems + payments
     const sales = await prisma.sale.findMany({
       where: { customerId, type: "credit" },
       select: {
         id: true,
-        total: true,
-        balance: true,
         createdAt: true,
-        customer: {
-          select: { id: true, name: true }, // fetch customer name
-        },
-        user: {
-          select: { id: true, firstname: true }, // fetch seller info
-        },
+        user: { select: { id: true, firstname: true } },
         saleItems: {
           select: {
             quantity: true,
             unitPrice: true,
-            product: {
-              select: { id: true, productname: true }, // fetch product name
-            },
+            product: { select: { id: true, productname: true } },
           },
         },
+        payments: { select: { amount: true } },
       },
-      orderBy: { createdAt: "desc" }, // latest first
+      orderBy: { createdAt: "desc" },
     });
 
-    const totalBalance = sales.reduce((sum, s) => sum + s.balance, 0);
+    // 3. Recalculate totals + filter empty or settled sales
+    const salesWithBalances = sales
+      .map((sale) => {
+        const total = sale.saleItems.reduce(
+          (sum, item) => sum + item.quantity * item.unitPrice,
+          0
+        );
 
-    const customerName = sales.length > 0 ? sales[0].customer.name : null;
+        const totalPayments = sale.payments.reduce(
+          (sum, p) => sum + p.amount,
+          0
+        );
+
+        const balance = total - totalPayments;
+
+        return {
+          ...sale,
+          total,
+          balance,
+        };
+      })
+      .filter((s) => s.saleItems.length > 0 && s.total > 0 && s.balance > 0); //  exclude fully paid sales
+
+    // 4. Customer total balance across valid sales
+    const totalBalance = salesWithBalances.reduce(
+      (sum, s) => sum + s.balance,
+      0
+    );
 
     response.json({
       customerId,
-      customerName,
+      customerName: customer.name,
       totalBalance,
-      sales,
+      sales: salesWithBalances,
     });
   } catch (error) {
     console.log("error getting customer balance", error.message);
