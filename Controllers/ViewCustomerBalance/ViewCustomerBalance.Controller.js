@@ -43,12 +43,12 @@ export const ViewCustomerBalanceController = async (request, response) => {
       .map((sale) => {
         const total = sale.saleItems.reduce(
           (sum, item) => sum + item.quantity * item.unitPrice,
-          0
+          0,
         );
 
         const totalPayments = sale.payments.reduce(
           (sum, p) => sum + p.amount,
-          0
+          0,
         );
 
         const balance = total - totalPayments;
@@ -64,7 +64,7 @@ export const ViewCustomerBalanceController = async (request, response) => {
     // 4. Customer total balance across valid sales
     const totalBalance = salesWithBalances.reduce(
       (sum, s) => sum + s.balance,
-      0
+      0,
     );
 
     response.json({

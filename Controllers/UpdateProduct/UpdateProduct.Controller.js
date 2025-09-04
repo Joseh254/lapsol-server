@@ -4,6 +4,11 @@ export async function UpdateProductController(request, response) {
   const { productname, price, quantity, details } = request.body;
   const { id } = request.params;
   try {
+    if (!id) {
+      return response
+        .status(400)
+        .json({ success: false, message: "product id is missing" });
+    }
     const updatedProduct = await prisma.products.update({
       where: { id: id },
       data: {

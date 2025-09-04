@@ -5,7 +5,17 @@ const prisma = new PrismaClient();
 export async function RecordCustomerPaymentController(request, response) {
   try {
     const { saleId, amount } = request.body;
+    if (!saleId) {
+      return response
+        .statut(400)
+        .json({ success: false, message: "Sale id is not found" });
+    }
 
+    if (!amount || amount == 0) {
+      return response
+        .status(400)
+        .json({ success: false, message: "Amount is required" });
+    }
     // 1. Find the sale first
     const sale = await prisma.sale.findUnique({
       where: { id: saleId },

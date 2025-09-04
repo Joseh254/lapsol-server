@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,6 +6,7 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model users {
   id            String         @id @default(uuid())
   email         String         @unique
@@ -25,62 +20,62 @@ model users {
   updatedAt     DateTime       @updatedAt
   refreshToken  String?
   refreshTokens RefreshToken[]
-  sales         sale[]         // one-to-many: user → sales
+  sales         sale[]
 }
 
 model RefreshToken {
   id        String   @id @default(uuid())
   token     String   @unique
   userId    String
-  user      users    @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   expiresAt DateTime
+  user      users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model products {
-  id          String      @id @default(uuid())
-  productname String      @unique
+  id          String     @id @default(uuid())
+  productname String     @unique
   price       Int
   details     String
-  quantity    Int         @default(5)  
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  saleItems   saleitem[]  // product can appear in many sale items
+  quantity    Int        @default(5)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  saleItems   saleitem[]
 }
 
 model customers {
-  id          String      @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
   location    String
   details     String?
-  phonenumber String      @unique
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  sales       sale[]      // one-to-many: customer → sales
+  phonenumber String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  sales       sale[]
 }
 
 model sale {
-  id         String      @id @default(uuid())
-  createdAt  DateTime    @default(now())
-  type       String?  @default("credit")    // "cash" or "credit"
+  id         String     @id @default(uuid())
+  createdAt  DateTime   @default(now())
+  type       String?    @default("credit")
   total      Int
-  balance    Int         // remaining balance if credit
+  balance    Int
   userId     String
   customerId String
-  user       users       @relation(fields: [userId], references: [id])
-  customer   customers   @relation(fields: [customerId], references: [id])
+  payments   payment[]
+  customer   customers  @relation(fields: [customerId], references: [id])
+  user       users      @relation(fields: [userId], references: [id])
   saleItems  saleitem[]
-  payments   payment[]   // track payments made toward this sale
 }
 
 model saleitem {
-  id        String    @id @default(uuid())
+  id        String   @id @default(uuid())
   saleId    String
   productId String
   quantity  Int
-  unitPrice Int       // snapshot of product price at time of sale
-  sale      sale      @relation(fields: [saleId], references: [id])
-  product   products  @relation(fields: [productId], references: [id])
+  unitPrice Int
+  product   products @relation(fields: [productId], references: [id])
+  sale      sale     @relation(fields: [saleId], references: [id])
 }
 
 model payment {
@@ -90,4 +85,3 @@ model payment {
   saleId    String
   sale      sale     @relation(fields: [saleId], references: [id])
 }
-//

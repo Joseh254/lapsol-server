@@ -5,6 +5,11 @@ const prisma = new PrismaClient();
 export async function FetchOneCustomerController(request, response) {
   const { id } = request.params;
   try {
+    if (!id) {
+      return response
+        .status(400)
+        .json({ success: false, message: "customer id is required" });
+    }
     const customer = await prisma.customers.findFirst({
       where: { id: id },
     });

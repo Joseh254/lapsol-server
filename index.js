@@ -69,8 +69,8 @@ app.listen(process.env.PORT, () => {
 // receive products from other sellers on credit
 // sell products on cash to customers
 // create account for customers
-//surpose im creating a system to sell products to customers on dept,
-// i can view their balances,once i sell product it should deduct from database,
+//
+// ,once i sell product it  deduct from database,
 // ,they can return product and adjust database records,,when they pay,
-// ,system should adjust balances,,i can view individual customer balances,,
+// ,system  adjust balances,,i can view individual customer balances,,
 // which user was logged in at that time,

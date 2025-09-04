@@ -5,7 +5,11 @@ const prisma = new PrismaClient();
 export async function ReturnProductController(request, response) {
   try {
     const { customerId, productId, quantity } = request.body;
-
+    if (!customerId || !productId || !quantity) {
+      return response
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
+    }
     // 1. Find the sale item for this customer & product
     const saleItem = await prisma.saleitem.findFirst({
       where: {
