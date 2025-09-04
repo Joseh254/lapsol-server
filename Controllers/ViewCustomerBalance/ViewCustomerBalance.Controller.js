@@ -19,8 +19,17 @@ export const ViewCustomerBalanceController = async (request, response) => {
         user: {
           select: { id: true, firstname: true }, // fetch seller info
         },
+        saleItems: {
+          select: {
+            quantity: true,
+            unitPrice: true,
+            product: {
+              select: { id: true, productname: true }, // fetch product name
+            },
+          },
+        },
       },
-      orderBy: { createdAt: "desc" }, // sort latest first
+      orderBy: { createdAt: "desc" }, // latest first
     });
 
     const totalBalance = sales.reduce((sum, s) => sum + s.balance, 0);
@@ -30,12 +39,11 @@ export const ViewCustomerBalanceController = async (request, response) => {
     response.json({
       customerId,
       customerName,
-      sales,
       totalBalance,
+      sales,
     });
   } catch (error) {
     console.log("error getting customer balance", error.message);
-
     response
       .status(500)
       .json({ success: false, message: "Internal server error" });

@@ -16,21 +16,17 @@ export async function ReturnProductController(request, response) {
     });
 
     if (!saleItem) {
-      return response
-        .status(404)
-        .json({
-          success: false,
-          message: "Sale item not found for this customer",
-        });
+      return response.status(404).json({
+        success: false,
+        message: "Sale item not found for this customer",
+      });
     }
 
     if (quantity > saleItem.quantity) {
-      return response
-        .status(400)
-        .json({
-          success: false,
-          message: "Return quantity exceeds sold quantity",
-        });
+      return response.status(400).json({
+        success: false,
+        message: "Return quantity exceeds sold quantity",
+      });
     }
 
     const refundAmount = saleItem.unitPrice * quantity;
