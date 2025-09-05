@@ -1,0 +1,18 @@
+# Ignore dependencies
+node_modules
+
+# Ignore build output
+dist
+build
+
+# Ignore git files
+.git
+.gitignore
+
+# Ignore Docker-related files
+Dockerfile
+.dockerignore
+
+# Ignore OS/Editor files
+.DS_Store
+*.log
