@@ -2,10 +2,10 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function AddProductsController(request, response) {
-  const { productname, price, details, quantity } = request.body;
+  const { productname, price, details, quantity,category } = request.body;
 
   try {
-    if (!productname || !price || !details || !quantity) {
+    if (!productname || !price || !details || !quantity || !category) {
       return response
         .status(400)
         .json({ success: false, message: "All product details are required!" });
@@ -17,6 +17,7 @@ export async function AddProductsController(request, response) {
         price,
         quantity,
         details,
+        category
       },
       select: {
         id: true,
@@ -24,6 +25,7 @@ export async function AddProductsController(request, response) {
         price: true,
         quantity: true,
         details: true,
+        category:true
       },
     });
     response

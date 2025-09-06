@@ -2,10 +2,10 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function AddProductMiddleware(request, response, next) {
-  const { productname, price, quantity, details } = request.body;
+  const { productname, price, quantity, details,category } = request.body;
   try {
     //validate fields
-    if (!productname || !price || !quantity || !details) {
+    if (!productname || !price || !quantity || !details || !category) {
       return response
         .status(400)
         .json({ success: false, message: "All product fields are required" });

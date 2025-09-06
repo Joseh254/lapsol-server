@@ -37,6 +37,7 @@ model products {
   productname String     @unique
   price       Int
   details     String
+  category String
   quantity    Int        @default(5)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
