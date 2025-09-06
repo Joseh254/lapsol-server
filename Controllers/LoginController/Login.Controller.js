@@ -56,24 +56,9 @@ export async function LoginController(request, response) {
       data: { refreshToken },
     });
 
-    response
-      .cookie("access_token", accessToken, {
-        // httpOnly: true,
-        // secure: process.env.NODE_ENV === "production",
-        // sameSite: "Strict",
-        maxAge: 15 * 60 * 1000, // 15 minutes
-      })
-      .cookie("refresh_token", refreshToken, {
-        // httpOnly: true,
-        // secure: process.env.NODE_ENV === "production",
-        // sameSite: "Strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      })
-      .json({
-        success: true,
-        message: "Logged in successfully",
-        data: payload,
-      });
+    response.cookie("access_token", accessToken, {  maxAge: 15 * 60 * 1000,  })
+     response.cookie("refresh_token", refreshToken, { maxAge: 7 * 24 * 60 * 60 * 1000,  })
+      response.status(200).json({success: true,message: "Logged in successfully",data: payload, });
   } catch (error) {
     console.error("Error logging in user:", error.message);
     return response
