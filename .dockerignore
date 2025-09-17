@@ -11,7 +11,7 @@ build
 
 # Ignore Docker-related files
 Dockerfile
-.dockerignore
+# .dockerignore
 
 # Ignore OS/Editor files
 .DS_Store
