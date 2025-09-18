@@ -62,6 +62,8 @@ app.use("/api/fetchonecustomer", fetchonecustomer);
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });
+// docker pull josephmbugua/lapsol-client:latest
+
 
 //sell products to customers on credit
 //view customer balances for individual customer
