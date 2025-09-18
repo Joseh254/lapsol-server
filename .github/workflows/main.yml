@@ -1,18 +1,19 @@
-name: Trigger Mono-Repo Build from Server
+name: Trigger Mono Repo Build on Tag
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*.*.*'
 
 jobs:
   trigger-mono:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger mono build
+      - name: Trigger mono build for client or server
         run: |
           curl -X POST \
             -H "Authorization: token ${{ secrets.MONOREPO_PAT }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/Joseh254/lapsol-pos/actions/workflows/lapsol-docker-images-deploy.yml/dispatches \
-            -d '{"ref":"main", "inputs": {"changed_target": "server"}}'
+            -d "{\"ref\":\"main\", \"inputs\": {\"changed_target\": \"client\", \"version_tag\": \"${GITHUB_REF#refs/tags/}\"}}"
+        # Replace "client" with "server" in the server repo workflow
