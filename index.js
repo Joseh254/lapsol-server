@@ -31,12 +31,12 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin:[ "http://localhost:5173","https://lapsol-technologies.vercel.app", "https://lapsol-technologies-empbdo2bf-joseph-mbuguas-projects.vercel.app" ], 
+    origin:[ "http://localhost:5173","https://lapsol-technologies.vercel.app", "https://lapsol-technologies-empbdo2bf-joseph-mbuguas-projects.vercel.app","https://lapsol-technologies-36lw7k5p6-joseph-mbuguas-projects.vercel.app/" ], 
     credentials: true,
   }),
 );
 app.get("/", (req, res) => {
-  res.send("Welcome to jovatech server!");
+  res.send("Welcome to Lapsol server server!");
 });
 
 app.use("/api/login", login);
