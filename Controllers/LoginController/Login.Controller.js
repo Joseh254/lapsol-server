@@ -6,6 +6,9 @@ const prisma = new PrismaClient();
 
 export async function LoginController(request, response) {
   const { email, password } = request.body;
+const isProduction = process.env.NODE_ENV === "production";
+
+
 
   try {
     const userExists = await prisma.users.findFirst({
@@ -55,21 +58,19 @@ export async function LoginController(request, response) {
       where: { id: userExists.id },
       data: { refreshToken },
     });
-
 response.cookie("access_token", accessToken, {
-  httpOnly: true,          // ✅ Prevents JS access (recommended for security)
-  secure: true,            // ✅ Required for HTTPS (Vercel & Render use HTTPS)
-  sameSite: "None",        // ✅ Allows cross-origin cookies
-  maxAge: 15 * 60 * 1000,  // 15 minutes
+  httpOnly: true,
+  secure: isProduction,                 // ✅ only true in production
+  sameSite: isProduction ? "None" : "Lax", // ✅ safe in dev
+  maxAge: 15 * 60 * 1000,
 });
 
 response.cookie("refresh_token", refreshToken, {
   httpOnly: true,
-  secure: true,
-  sameSite: "None",
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  secure: isProduction,
+  sameSite: isProduction ? "None" : "Lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 });
-
       response.status(200).json({success: true,message: "Logged in successfully",data: payload, });
   } catch (error) {
     console.error("Error logging in user:", error.message);
