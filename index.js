@@ -29,27 +29,40 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+
+
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://lapsol-technologies.vercel.app"
+  "http://localhost:5173", // local dev
+  "https://lapsol-technologies.vercel.app" // production
 ];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (
-        !origin || // allow non-browser requests like curl/Postman
-        allowedOrigins.includes(origin) ||
-        origin.endsWith(".vercel.app") // ✅ allow all Vercel preview URLs
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS not allowed for this origin"));
+      // ✅ Allow no origin (e.g., curl, Postman, Insomnia)
+      if (!origin) {
+        return callback(null, true);
       }
+
+      // ✅ Allow exact matches
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // ✅ Allow preview deploys for your Vercel project only
+      const vercelPreviewRegex = /^https:\/\/lapsol-technologies-.*\.vercel\.app$/;
+      if (vercelPreviewRegex.test(origin)) {
+        return callback(null, true);
+      }
+
+      // ❌ Block everything else
+      console.warn("❌ Blocked CORS request from origin:", origin);
+      return callback(new Error("Not allowed by CORS"));
     },
-    credentials: true,
+    credentials: true
   })
 );
+
 
 app.get("/", (req, res) => {
   res.send("Welcome to Lapsol server server!");
