@@ -69,6 +69,7 @@ app.listen(process.env.PORT, () => {
 // docker pull josephmbugua/lapsol-client:latest
 
 
+
 //sell products to customers on credit
 //view customer balances for individual customer
 //when customer pay it deduct from balances
