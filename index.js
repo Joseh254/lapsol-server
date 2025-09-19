@@ -29,12 +29,28 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://lapsol-technologies.vercel.app"
+];
+
 app.use(
   cors({
-    origin:[ "http://localhost:5173","https://lapsol-technologies.vercel.app", "https://lapsol-technologies-empbdo2bf-joseph-mbuguas-projects.vercel.app","https://lapsol-technologies-36lw7k5p6-joseph-mbuguas-projects.vercel.app" ], 
+    origin: (origin, callback) => {
+      if (
+        !origin || // allow non-browser requests like curl/Postman
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app") // ✅ allow all Vercel preview URLs
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed for this origin"));
+      }
+    },
     credentials: true,
-  }),
+  })
 );
+
 app.get("/", (req, res) => {
   res.send("Welcome to Lapsol server server!");
 });
