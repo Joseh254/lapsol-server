@@ -33,40 +33,43 @@ model RefreshToken {
 }
 
 model products {
-  id          String     @id @default(uuid())
-  productname String     @unique
-  price       Int
-  details     String
-  category String
-  quantity    Int        @default(5)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  saleItems   saleitem[]
+  id             String          @id @default(uuid())
+  productname    String          @unique
+  price          Int
+  details        String
+  category       String
+  quantity       Int             @default(5)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  saleItems      saleitem[]
+  productReturns productreturn[]
 }
 
 model customers {
-  id          String   @id @default(uuid())
-  name        String
-  location    String
-  details     String?
-  phonenumber String   @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  sales       sale[]
+  id             String          @id @default(uuid())
+  name           String
+  location       String
+  details        String?
+  phonenumber    String          @unique
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  sales          sale[]
+  productReturns productreturn[]
 }
 
 model sale {
-  id         String     @id @default(uuid())
-  createdAt  DateTime   @default(now())
-  type       String?    @default("credit")
-  total      Int
-  balance    Int
-  userId     String
-  customerId String
-  payments   payment[]
-  customer   customers  @relation(fields: [customerId], references: [id])
-  user       users      @relation(fields: [userId], references: [id])
-  saleItems  saleitem[]
+  id             String          @id @default(uuid())
+  createdAt      DateTime        @default(now())
+  type           String?         @default("credit")
+  total          Int
+  balance        Int
+  userId         String
+  customerId     String
+  payments       payment[]
+  customer       customers       @relation(fields: [customerId], references: [id])
+  user           users           @relation(fields: [userId], references: [id])
+  saleItems      saleitem[]
+  productReturns productreturn[]
 }
 
 model saleitem {
@@ -77,18 +80,35 @@ model saleitem {
   unitPrice Int
   product   products @relation(fields: [productId], references: [id])
   sale      sale     @relation(fields: [saleId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model payment {
-  id        String   @id @default(uuid())
+  id        String        @id @default(uuid())
   amount    Int
-  method    PaymentMethod  @default(CREDIT)
-  createdAt DateTime @default(now())
+  method    PaymentMethod @default(CREDIT)
+  createdAt DateTime      @default(now())
   saleId    String
-  sale      sale     @relation(fields: [saleId], references: [id])
+  sale      sale          @relation(fields: [saleId], references: [id])
 }
+
+model productreturn {
+  id           String   @id @default(uuid())
+  customerId   String
+  productId    String
+  saleId       String
+  quantity     Int
+  refundAmount Int
+  createdAt    DateTime @default(now())
+
+  // Relations
+  customer customers @relation(fields: [customerId], references: [id])
+  product  products  @relation(fields: [productId], references: [id])
+  sale     sale      @relation(fields: [saleId], references: [id])
+}
+
 enum PaymentMethod {
-  CREDIT   // default
+  CREDIT // default
   CASH
   MPESA
   PAYBILL

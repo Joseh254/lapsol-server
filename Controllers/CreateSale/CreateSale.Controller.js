@@ -31,9 +31,10 @@ export async function CreateSale(request, response) {
       if (product.quantity < item.quantity) {
         return response.status(400).json({
           success: false,
-          message: `Not enough stock for ${product.productname}`,
-        });
+          message: `Not enough stock for ${product.productname}` },
+        );
       }
+
       total += product.price * item.quantity;
 
       saleItemsData.push({
@@ -46,11 +47,12 @@ export async function CreateSale(request, response) {
     const paymentMethod = type.toUpperCase();
 
     const result = await prisma.$transaction(async (tx) => {
+      // 1. Create sale
       const sale = await tx.sale.create({
         data: {
           type,
           total,
-          balance: type === "credit" ? total : 0,
+          balance: total, // ✅ Save full total as balance; don't reduce it here
           userId,
           customerId,
           saleItems: { create: saleItemsData },
@@ -58,14 +60,24 @@ export async function CreateSale(request, response) {
         include: { saleItems: true },
       });
 
-      await tx.payment.create({
-        data: {
-          amount: total,
-          method: paymentMethod,
-          saleId: sale.id,
-        },
-      });
+      // 2. Only add payment if not credit
+      if (type !== "credit") {
+        await tx.payment.create({
+          data: {
+            amount: total,
+            method: paymentMethod,
+            saleId: sale.id,
+          },
+        });
 
+        // Optionally update balance to 0 for cash/mpesa
+        await tx.sale.update({
+          where: { id: sale.id },
+          data: { balance: 0 },
+        });
+      }
+
+      // 3. Decrease product stock
       for (const item of items) {
         await tx.products.update({
           where: { id: item.productId },

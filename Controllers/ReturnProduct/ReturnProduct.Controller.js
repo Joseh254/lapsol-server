@@ -5,18 +5,28 @@ const prisma = new PrismaClient();
 export async function ReturnProductController(request, response) {
   try {
     const { customerId, productId, quantity } = request.body;
+
     if (!customerId || !productId || !quantity) {
-      return response
-        .status(400)
-        .json({ success: false, message: "All fields are required" });
+      return response.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
     }
-    // 1. Find the sale item for this customer & product
+
+    // 1. Find a sale item for this customer & product
     const saleItem = await prisma.saleitem.findFirst({
       where: {
         productId,
-        sale: { customerId }, // 👈 filter sale by customer
+        sale: {
+          customerId,
+          type: "credit",
+        },
       },
-      include: { sale: true, product: true },
+      include: {
+        sale: true,
+        product: true,
+      },
+      orderBy: { createdAt: "desc" }, // pick the most recent one
     });
 
     if (!saleItem) {
@@ -35,32 +45,38 @@ export async function ReturnProductController(request, response) {
 
     const refundAmount = saleItem.unitPrice * quantity;
 
-    // 2. Update sale balance & total
-    await prisma.sale.update({
-      where: { id: saleItem.saleId },
-      data: {
-        total: { decrement: refundAmount },
-        balance: { decrement: refundAmount },
-      },
-    });
-
-    // 3. If full quantity returned → delete saleItem
+    // 2. Update or delete the sale item
     if (quantity === saleItem.quantity) {
       await prisma.saleitem.delete({ where: { id: saleItem.id } });
     } else {
       await prisma.saleitem.update({
         where: { id: saleItem.id },
-        data: { quantity: { decrement: quantity } },
+        data: {
+          quantity: { decrement: quantity },
+        },
       });
     }
 
-    // 4. Restock product
+    // 3. Restock product
     await prisma.products.update({
       where: { id: productId },
-      data: { quantity: { increment: quantity } },
+      data: {
+        quantity: { increment: quantity },
+      },
     });
 
-    response.status(200).json({
+    // 4. Log return (optional but important)
+    await prisma.productreturn.create({
+      data: {
+        customerId,
+        productId,
+        saleId: saleItem.saleId,
+        quantity,
+        refundAmount,
+      },
+    });
+
+    return response.status(200).json({
       success: true,
       message: "Product returned successfully",
       refundAmount,
@@ -69,7 +85,7 @@ export async function ReturnProductController(request, response) {
     });
   } catch (error) {
     console.error("ReturnProductController error:", error.message);
-    response
+    return response
       .status(500)
       .json({ success: false, message: "Internal server error" });
   }
