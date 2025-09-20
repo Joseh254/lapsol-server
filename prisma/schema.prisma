@@ -82,7 +82,16 @@ model saleitem {
 model payment {
   id        String   @id @default(uuid())
   amount    Int
+  method    PaymentMethod  @default(CREDIT)
   createdAt DateTime @default(now())
   saleId    String
   sale      sale     @relation(fields: [saleId], references: [id])
+}
+enum PaymentMethod {
+  CREDIT   // default
+  CASH
+  MPESA
+  PAYBILL
+  CHEQUE
+  BANK
 }

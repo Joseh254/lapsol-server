@@ -40,13 +40,21 @@ export async function FetchSalesController(request, response) {
             },
           },
         },
+        payments: {
+          select: {
+            id: true,
+            amount: true,
+            method: true,
+            createdAt: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
       },
     });
 
-    // Format to your frontend's needs (optional)
+    // Format to your frontend's needs
     const formattedSales = sales.map((sale) => ({
       saleId: sale.id,
       date: sale.createdAt,
@@ -60,6 +68,12 @@ export async function FetchSalesController(request, response) {
         quantity: item.quantity,
         unitPrice: item.unitPrice,
         total: item.quantity * item.unitPrice,
+      })),
+      payments: sale.payments.map((p) => ({
+        id: p.id,
+        amount: p.amount,
+        method: p.method || "CREDIT", // fallback just in case
+        date: p.createdAt,
       })),
     }));
 
