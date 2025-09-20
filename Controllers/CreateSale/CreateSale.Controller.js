@@ -5,7 +5,9 @@ export async function CreateSale(request, response) {
   const { type, customerId, items } = request.body;
 
   if (!Array.isArray(items) || items.length === 0) {
-    return response.status(400).json({ success: false, message: "No items provided" });
+    return response
+      .status(400)
+      .json({ success: false, message: "No items provided" });
   }
 
   try {
@@ -22,7 +24,9 @@ export async function CreateSale(request, response) {
     for (const item of items) {
       const product = products.find((p) => p.id === item.productId);
       if (!product) {
-        return response.status(400).json({ success: false, message: `Product not found` });
+        return response
+          .status(400)
+          .json({ success: false, message: `Product not found` });
       }
       if (product.quantity < item.quantity) {
         return response.status(400).json({
@@ -75,6 +79,8 @@ export async function CreateSale(request, response) {
     return response.status(201).json({ success: true, data: result });
   } catch (error) {
     console.error("Error creating sale:", error);
-    return response.status(500).json({ success: false, message: "Internal server error!" });
+    return response
+      .status(500)
+      .json({ success: false, message: "Internal server error!" });
   }
 }
