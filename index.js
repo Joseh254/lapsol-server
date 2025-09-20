@@ -22,6 +22,7 @@ import returnproduct from "./Routes/ReturnProduct/ReturnProduct.Route.js";
 import recordcustomerpayment from "./Routes/RecordCustomerPayment/RecordCustomerPayment.Route.js";
 import fetchallcustomers from "./Routes/FetchAllCustomers/FetchAllCustomers.Route.js";
 import fetchonecustomer from "./Routes/FetchOneCustomer/FetchOneCustomer.Route.js";
+import deletecustomer from './Routes/DeleteCustomer/DeleteCustomer.Route.js'
 
 dotenv.config();
 
@@ -62,11 +63,12 @@ app.use("/api/returnproduct", returnproduct);
 app.use("/api/recordcustomerpayment", recordcustomerpayment);
 app.use("/api/fetchallcustomers", fetchallcustomers);
 app.use("/api/fetchonecustomer", fetchonecustomer);
+app.use('/api/deletecustomer',deletecustomer)
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });
-// docker pull josephmbugua/lapsol-client:latest
+// docker pull josephmbugua/lapsol-server:latest
 
 
 
