@@ -1,64 +1,54 @@
 import { PrismaClient } from "@prisma/client";
-
 const prisma = new PrismaClient();
-
 export async function AddCustomerMiddleware(request, response, next) {
   const { name, location, details, phonenumber } = request.body;
+
   try {
-    if (!name || !location || !details || !phonenumber) {
-      return response
-        .status(400)
-        .json({ success: false, message: "All fields are required" });
+    if (!name || !location || !phonenumber) {
+      return response.status(400).json({
+        success: false,
+        message: "Name, location, and phone number are required",
+      });
     }
-    // validate phone number
+
     const customerWithPhoneExists = await prisma.customers.findFirst({
-      where: { phonenumber: phonenumber },
+      where: { phonenumber },
     });
+
     if (customerWithPhoneExists) {
       return response.status(400).json({
         success: false,
-        message: "A Customer with the phone number exists",
-      });
-    }
-    //validate length
-    if (name.length < 4) {
-      return response.status(400).json({
-        success: false,
-        message: "Customer name should be atleast 4 characters",
-      });
-    }
-    if (name.length > 40) {
-      return response.status(400).json({
-        success: false,
-        message: "Customer name should have not more than 40 characters",
-      });
-    }
-    if (location.length < 4) {
-      return response.status(400).json({
-        success: false,
-        message: "location must  be atleast 4 characters",
-      });
-    }
-    if (location.length > 40) {
-      return response.status(400).json({
-        success: false,
-        message: "location should have not more than 40 characters",
-      });
-    }
-    if (details.length < 10) {
-      return response.status(400).json({
-        success: false,
-        message: "details must  be atleast 10 characters",
-      });
-    }
-    if (details.location > 40) {
-      return response.status(400).json({
-        success: false,
-        message: "details should have not more than 40 characters",
+        message: "A customer with this phone number already exists",
       });
     }
 
-    // validate phone
+    if (name.length < 4 || name.length > 40) {
+      return response.status(400).json({
+        success: false,
+        message: "Customer name must be between 4 and 40 characters",
+      });
+    }
+
+    if (location.length < 4 || location.length > 40) {
+      return response.status(400).json({
+        success: false,
+        message: "Location must be between 4 and 40 characters",
+      });
+    }
+
+    if (details && details.length < 10) {
+      return response.status(400).json({
+        success: false,
+        message: "Details must be at least 10 characters if provided",
+      });
+    }
+
+    if (details && details.length > 40) {
+      return response.status(400).json({
+        success: false,
+        message: "Details must not exceed 40 characters",
+      });
+    }
 
     if (!phonenumber.startsWith("07") && !phonenumber.startsWith("01")) {
       return response.status(400).json({
@@ -73,6 +63,7 @@ export async function AddCustomerMiddleware(request, response, next) {
         message: "Phone number must be exactly 10 digits",
       });
     }
+
     next();
   } catch (error) {
     console.log("error in adding customer middleware", error.message);
