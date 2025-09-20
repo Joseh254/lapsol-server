@@ -30,7 +30,10 @@ export async function UpdateProductMiddleware(request, response, next) {
       if (duplicate) {
         return response
           .status(400)
-          .json({ success: false, message: "A product with that name already exists!" });
+          .json({
+            success: false,
+            message: "A product with that name already exists!",
+          });
       }
 
       if (productname.length < 4) {
@@ -77,10 +80,11 @@ export async function UpdateProductMiddleware(request, response, next) {
       }
     }
 
-   
     next();
   } catch (error) {
     console.error("Error in update product middleware:", error.message);
-    return response.status(500).json({ success: false, message: "Internal server error!" });
+    return response
+      .status(500)
+      .json({ success: false, message: "Internal server error!" });
   }
 }

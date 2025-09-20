@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 export async function UpdateProductController(request, response) {
-  const { productname, price, quantity, details,category } = request.body;
+  const { productname, price, quantity, details, category } = request.body;
   const { id } = request.params;
   try {
     if (!id) {
@@ -24,7 +24,7 @@ export async function UpdateProductController(request, response) {
         price: true,
         details: true,
         quantity: true,
-        category:true,
+        category: true,
       },
     });
     return response.status(200).json({

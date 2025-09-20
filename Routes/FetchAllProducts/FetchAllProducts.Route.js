@@ -4,6 +4,6 @@ import { FetchAllProductsController } from "../../Controllers/FetchAllProducts/F
 
 const router = Router();
 
-router.get("/", UserAuth,FetchAllProductsController);
+router.get("/", UserAuth, FetchAllProductsController);
 
 export default router;

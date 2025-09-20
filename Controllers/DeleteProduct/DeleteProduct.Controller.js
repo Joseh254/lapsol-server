@@ -4,7 +4,11 @@ const prisma = new PrismaClient();
 export async function DeleteProductController(request, response) {
   const { id } = request.params;
   try {
-    if(!id){return response.status(404).json({success:false,message:"Select a product to delete"})}
+    if (!id) {
+      return response
+        .status(404)
+        .json({ success: false, message: "Select a product to delete" });
+    }
     const productExists = await prisma.products.findFirst({
       where: { id: id },
     });

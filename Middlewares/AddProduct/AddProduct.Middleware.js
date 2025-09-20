@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function AddProductMiddleware(request, response, next) {
-  const { productname, price, quantity, details,category } = request.body;
+  const { productname, price, quantity, details, category } = request.body;
   try {
     //validate fields
     if (!productname || !price || !quantity || !details || !category) {

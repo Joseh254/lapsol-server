@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function DeleteCustomerController(request, response) {
@@ -51,7 +51,6 @@ export async function DeleteCustomerController(request, response) {
       success: true,
       message: `${customer.name} was removed successfully`,
     });
-
   } catch (error) {
     console.error("Error deleting customer:", error.message);
     return response.status(500).json({

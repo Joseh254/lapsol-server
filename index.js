@@ -22,7 +22,7 @@ import returnproduct from "./Routes/ReturnProduct/ReturnProduct.Route.js";
 import recordcustomerpayment from "./Routes/RecordCustomerPayment/RecordCustomerPayment.Route.js";
 import fetchallcustomers from "./Routes/FetchAllCustomers/FetchAllCustomers.Route.js";
 import fetchonecustomer from "./Routes/FetchOneCustomer/FetchOneCustomer.Route.js";
-import deletecustomer from './Routes/DeleteCustomer/DeleteCustomer.Route.js'
+import deletecustomer from "./Routes/DeleteCustomer/DeleteCustomer.Route.js";
 
 dotenv.config();
 
@@ -30,15 +30,12 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-
 app.use(
   cors({
     origin: true, // ✅ Allows all origins
-    credentials: true
-  })
+    credentials: true,
+  }),
 );
-
-
 
 app.get("/", (req, res) => {
   res.send("Welcome to Lapsol server server!");
@@ -63,14 +60,12 @@ app.use("/api/returnproduct", returnproduct);
 app.use("/api/recordcustomerpayment", recordcustomerpayment);
 app.use("/api/fetchallcustomers", fetchallcustomers);
 app.use("/api/fetchonecustomer", fetchonecustomer);
-app.use('/api/deletecustomer',deletecustomer)
+app.use("/api/deletecustomer", deletecustomer);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });
 // docker pull josephmbugua/lapsol-server:latest
-
-
 
 //sell products to customers on credit
 //view customer balances for individual customer
