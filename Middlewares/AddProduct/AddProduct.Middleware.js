@@ -27,10 +27,10 @@ export async function AddProductMiddleware(request, response, next) {
         message: "Product name must have a minimum of 4 characters",
       });
     }
-    if (productname.length > 20) {
+    if (productname.length > 80) {
       return response.status(400).json({
         success: false,
-        message: "Product name must have a maximum of 20 characters",
+        message: "Product name must have a maximum of 80 characters",
       });
     }
     if (details.length < 10) {

@@ -41,10 +41,10 @@ export async function UpdateProductMiddleware(request, response, next) {
         });
       }
 
-      if (productname.length > 20) {
+      if (productname.length > 80) {
         return response.status(400).json({
           success: false,
-          message: "Product name must have a maximum of 20 characters",
+          message: "Product name must have a maximum of 80 characters",
         });
       }
     }
