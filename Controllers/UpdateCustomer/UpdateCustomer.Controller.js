@@ -1,37 +1,58 @@
 import { PrismaClient } from "@prisma/client";
-
 const prisma = new PrismaClient();
 
 export async function UpdateCustomerController(request, response) {
   const { name, location, details, phonenumber } = request.body;
   const { id } = request.params;
+
   try {
     const updatedCustomer = await prisma.customers.update({
-      where: { id: id },
+      where: { id },
       data: {
         ...(name && { name }),
         ...(location && { location }),
         ...(details && { details }),
         ...(phonenumber && { phonenumber }),
       },
-      select: {
-        id: true,
-        name: true,
-        location: true,
-        details: true,
-        phonenumber: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
+        sales: {
+          select: {
+            balance: true,
+          },
+        },
       },
     });
-    return response.status(201).json({
+
+    // Calculate total balance
+    const totalBalance = updatedCustomer.sales.reduce(
+      (sum, sale) => sum + sale.balance,
+      0,
+    );
+
+    // Return customer without full sales list
+    const { sales, ...rest } = updatedCustomer;
+
+    return response.status(200).json({
       success: true,
-      message: `${updatedCustomer.name} details updated`,
+      message: `${rest.name} details updated`,
+      data: {
+        ...rest,
+        balance: totalBalance,
+      },
     });
   } catch (error) {
-    console.log("error updating customer details");
-    return response
-      .status(500)
-      .json({ success: false, message: "Internal server error!" });
+    console.error("Error updating customer:", error.message);
+
+    if (error.code === "P2002") {
+      return response.status(409).json({
+        success: false,
+        message: "Phone number already exists",
+      });
+    }
+
+    return response.status(500).json({
+      success: false,
+      message: "Internal server error!",
+    });
   }
 }

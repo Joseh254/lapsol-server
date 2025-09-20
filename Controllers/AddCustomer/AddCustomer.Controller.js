@@ -8,13 +8,11 @@ export async function AddCustomerController(request, response) {
     const newCustomer = await prisma.customers.create({
       data: { name, location, details, phonenumber },
     });
-    response
-      .status(200)
-      .json({
-        success: true,
-        data: newCustomer,
-        message: "Customer added to database",
-      });
+    response.status(200).json({
+      success: true,
+      data: newCustomer,
+      message: "Customer added to database",
+    });
   } catch (error) {
     console.log("error adding customer", error.message);
     return response

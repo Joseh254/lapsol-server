@@ -28,12 +28,10 @@ export async function UpdateProductMiddleware(request, response, next) {
       });
 
       if (duplicate) {
-        return response
-          .status(400)
-          .json({
-            success: false,
-            message: "A product with that name already exists!",
-          });
+        return response.status(400).json({
+          success: false,
+          message: "A product with that name already exists!",
+        });
       }
 
       if (productname.length < 4) {

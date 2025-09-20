@@ -69,13 +69,11 @@ export async function LoginController(request, response) {
       sameSite: isProduction ? "None" : "Lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    response
-      .status(200)
-      .json({
-        success: true,
-        message: "Logged in successfully",
-        data: payload,
-      });
+    response.status(200).json({
+      success: true,
+      message: "Logged in successfully",
+      data: payload,
+    });
   } catch (error) {
     console.error("Error logging in user:", error.message);
     return response
