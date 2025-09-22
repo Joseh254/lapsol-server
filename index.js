@@ -25,6 +25,8 @@ import fetchonecustomer from "./Routes/FetchOneCustomer/FetchOneCustomer.Route.j
 import deletecustomer from "./Routes/DeleteCustomer/DeleteCustomer.Route.js";
 import fetchsales from "./Routes/FetchSales/FetchSales.Route.js";
 import fetchcustomersales from "./Routes/FetchCustomerSale/FetchCustomerSale.Route.js";
+import fetchpayments from "./Routes/FetchPayment/FetchPayment.Route.js";
+import { FetchPayments } from "./Controllers/FetchPayments/FetchPayments.Controller.js";
 
 dotenv.config();
 
@@ -65,6 +67,7 @@ app.use("/api/fetchonecustomer", fetchonecustomer);
 app.use("/api/deletecustomer", deletecustomer);
 app.use("/api/fetchsales", fetchsales);
 app.use("/api/fetchcustomersales", fetchcustomersales);
+app.use("/api/fetchpayment", fetchpayments);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);

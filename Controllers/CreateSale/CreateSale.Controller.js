@@ -31,8 +31,8 @@ export async function CreateSale(request, response) {
       if (product.quantity < item.quantity) {
         return response.status(400).json({
           success: false,
-          message: `Not enough stock for ${product.productname}` },
-        );
+          message: `Not enough stock for ${product.productname}`,
+        });
       }
 
       total += product.price * item.quantity;
