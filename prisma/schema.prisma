@@ -44,7 +44,6 @@ model products {
   saleItems      saleitem[]
   productReturns productreturn[]
 }
-
 model customers {
   id             String          @id @default(uuid())
   name           String
@@ -53,7 +52,7 @@ model customers {
   phonenumber    String          @unique
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
-  sales          sale[]
+  sales          sale[]          @relation("CustomerSales")
   productReturns productreturn[]
 }
 
@@ -66,21 +65,11 @@ model sale {
   userId         String
   customerId     String
   payments       payment[]
-  customer       customers       @relation(fields: [customerId], references: [id])
-  user           users           @relation(fields: [userId], references: [id])
   saleItems      saleitem[]
   productReturns productreturn[]
-}
 
-model saleitem {
-  id        String   @id @default(uuid())
-  saleId    String
-  productId String
-  quantity  Int
-  unitPrice Int
-  product   products @relation(fields: [productId], references: [id])
-  sale      sale     @relation(fields: [saleId], references: [id])
-  createdAt DateTime @default(now())
+  customer       customers       @relation("CustomerSales", fields: [customerId], references: [id], onDelete: Cascade)
+  user           users           @relation(fields: [userId], references: [id])
 }
 
 model payment {
@@ -89,7 +78,20 @@ model payment {
   method    PaymentMethod @default(CREDIT)
   createdAt DateTime      @default(now())
   saleId    String
-  sale      sale          @relation(fields: [saleId], references: [id])
+
+  sale      sale          @relation(fields: [saleId], references: [id], onDelete: Cascade)
+}
+
+model saleitem {
+  id        String   @id @default(uuid())
+  saleId    String
+  productId String
+  quantity  Int
+  unitPrice Int
+  createdAt DateTime @default(now())
+
+  sale      sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product   products @relation(fields: [productId], references: [id])
 }
 
 model productreturn {
@@ -101,10 +103,9 @@ model productreturn {
   refundAmount Int
   createdAt    DateTime @default(now())
 
-  // Relations
-  customer customers @relation(fields: [customerId], references: [id])
+  customer customers @relation(fields: [customerId], references: [id], onDelete: Cascade)
   product  products  @relation(fields: [productId], references: [id])
-  sale     sale      @relation(fields: [saleId], references: [id])
+  sale     sale      @relation(fields: [saleId], references: [id], onDelete: Cascade)
 }
 
 enum PaymentMethod {
