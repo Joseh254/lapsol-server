@@ -9,34 +9,16 @@ export async function FetchPayments(req, res) {
       where: {
         AND: [
           customerId ? { customerId } : {},
-
-          // Only include:
-          // (1) Non-credit sales with payments
-          // (2) Credit sales that have at least one payment
           {
             OR: [
-              {
-                type: {
-                  not: "credit",
-                },
-              },
-              {
-                payments: {
-                  some: {}, // At least one payment
-                },
-              },
+              { type: { not: "credit" } }, // Non-credit sales
+              { payments: { some: {} } }, // Credit sales with at least one payment
             ],
           },
         ],
       },
       include: {
-        customer: {
-          select: {
-            id: true,
-            name: true,
-            phonenumber: true,
-          },
-        },
+        customer: { select: { id: true, name: true, phonenumber: true } },
         saleItems: {
           select: {
             product: { select: { productname: true } },
@@ -44,30 +26,15 @@ export async function FetchPayments(req, res) {
             unitPrice: true,
           },
         },
-        payments: {
-          select: {
-            amount: true,
-            method: true,
-            createdAt: true,
-          },
-        },
+        payments: { select: { amount: true, method: true, createdAt: true } },
       },
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy: { createdAt: "desc" },
     });
 
     const results = sales.map((s) => {
       const totalSaleAmount = s.total;
       const totalPaid = s.payments.reduce((sum, p) => sum + p.amount, 0);
       const balance = s.balance;
-
-      const productList = s.saleItems.map((item) => ({
-        name: item.product.productname,
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
-        total: item.quantity * item.unitPrice,
-      }));
 
       return {
         saleId: s.id,
@@ -76,7 +43,12 @@ export async function FetchPayments(req, res) {
           name: s.customer.name,
           phonenumber: s.customer.phonenumber,
         },
-        products: productList,
+        products: s.saleItems.map((item) => ({
+          name: item.product.productname,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          total: item.quantity * item.unitPrice,
+        })),
         total: totalSaleAmount,
         paid: totalPaid,
         balance,
@@ -88,14 +60,14 @@ export async function FetchPayments(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: `Fetched ${results.length} payment(s)`,
+      message: `Fetched ${results.length} payment(s) successfully`,
       data: results,
     });
   } catch (error) {
-    console.error("Error in GetPaymentsWithBalanceController:", error);
+    console.error("❌ Error in FetchPayments:", error);
     return res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: "Internal server error while fetching payments",
     });
   }
 }

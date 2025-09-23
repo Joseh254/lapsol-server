@@ -5,24 +5,29 @@ export async function RecordCustomerPaymentController(request, response) {
   try {
     const { saleId, amount, method } = request.body;
 
+    // 🔹 Validate input
     if (!saleId) {
-      return response
-        .status(400)
-        .json({ success: false, message: "Sale ID is required" });
+      return response.status(400).json({
+        success: false,
+        message: "Sale ID is required",
+      });
     }
 
     if (!amount || amount <= 0) {
-      return response
-        .status(400)
-        .json({ success: false, message: "Amount must be greater than 0" });
+      return response.status(400).json({
+        success: false,
+        message: "Amount must be greater than 0",
+      });
     }
 
     if (!method) {
-      return response
-        .status(400)
-        .json({ success: false, message: "Payment method is required" });
+      return response.status(400).json({
+        success: false,
+        message: "Payment method is required",
+      });
     }
 
+    // 🔹 Normalize and validate payment method
     const normalizedMethod = method.toUpperCase();
     const validMethods = Object.keys(PaymentMethod);
 
@@ -33,15 +38,17 @@ export async function RecordCustomerPaymentController(request, response) {
       });
     }
 
+    // 🔹 Get the sale and check balance
     const sale = await prisma.sale.findUnique({
       where: { id: saleId },
       select: { balance: true },
     });
 
     if (!sale) {
-      return response
-        .status(404)
-        .json({ success: false, message: "Sale not found" });
+      return response.status(404).json({
+        success: false,
+        message: "Sale not found",
+      });
     }
 
     if (amount > sale.balance) {
@@ -51,33 +58,38 @@ export async function RecordCustomerPaymentController(request, response) {
       });
     }
 
-    // Create payment with method
-    const payment = await prisma.payment.create({
-      data: {
-        saleId,
-        amount,
-        method: normalizedMethod, // use normalized validated method
-      },
-    });
-
-    // Decrease balance
-    await prisma.sale.update({
-      where: { id: saleId },
-      data: {
-        balance: { decrement: amount },
-      },
-    });
+    // 🔹 Transaction: record payment + update balance together
+    const [payment, updatedSale] = await prisma.$transaction([
+      prisma.payment.create({
+        data: {
+          saleId,
+          amount,
+          method: normalizedMethod,
+        },
+      }),
+      prisma.sale.update({
+        where: { id: saleId },
+        data: {
+          balance: { decrement: amount },
+        },
+        select: { id: true, balance: true }, // return updated balance
+      }),
+    ]);
 
     return response.status(201).json({
       success: true,
-      message: `${amount} payment recorded as ${normalizedMethod}`,
-      data: payment,
+      message: `Payment of ${amount} recorded successfully as ${normalizedMethod}`,
+      data: {
+        payment,
+        updatedSale,
+      },
     });
   } catch (error) {
-    console.error("Error recording customer payment:", error);
+    console.error("❌ Error recording customer payment:", error);
+
     return response.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: "Internal server error while recording payment",
     });
   }
 }
