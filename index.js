@@ -28,6 +28,7 @@ import fetchcustomersales from "./Routes/FetchCustomerSale/FetchCustomerSale.Rou
 import fetchpayments from "./Routes/FetchPayment/FetchPayment.Route.js";
 import FetchCustomerWithBalance from "./Routes/FetchCustomerWithBalance/FetchCustomerWithBalance.Route.js";
 import createpurchase from "./Routes/CreatePurchase/CreatePurchase.Route.js";
+import getcustomerpurchases from "./Routes/GetCustomerPurchases/GetCustomerPurchases.Route.js";
 
 dotenv.config();
 
@@ -71,6 +72,7 @@ app.use("/api/fetchcustomersales", fetchcustomersales);
 app.use("/api/fetchpayment", fetchpayments);
 app.use("/api/fetchcustomerswithbalance", FetchCustomerWithBalance);
 app.use("/api/createpurchase", createpurchase);
+app.use("/api/getcustomerpurchases", getcustomerpurchases);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
