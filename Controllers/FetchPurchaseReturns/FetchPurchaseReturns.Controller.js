@@ -2,27 +2,20 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 /**
- * Fetch all returns for a given supplier/customer
- * Query params: customerId (optional) or supplierId
+ * Fetch all purchase returns, optionally filtered by customerId
+ * Query param: customerId (optional)
  */
 export async function FetchPurchaseReturns(req, res) {
   try {
     const { customerId } = req.query;
 
-    if (!customerId) {
-      return res.status(400).json({
-        success: false,
-        message: "customerId is required to fetch returns",
-      });
-    }
+    // Build where condition dynamically
+    const whereCondition = customerId
+      ? { purchase: { customerId } }
+      : {}; // no filter → all returns
 
-    // Fetch all purchasereturn records for this customer
     const returns = await prisma.purchasereturn.findMany({
-      where: {
-        purchase: {
-          customerId, // fetch returns for purchases linked to this customer/supplier
-        },
-      },
+      where: whereCondition,
       include: {
         purchase: {
           select: {
@@ -31,6 +24,13 @@ export async function FetchPurchaseReturns(req, res) {
             total: true,
             balance: true,
             createdAt: true,
+            supplier: {
+              select: {
+                id: true,
+                name: true,
+                phonenumber: true,
+              },
+            },
           },
         },
         product: {
@@ -49,12 +49,12 @@ export async function FetchPurchaseReturns(req, res) {
     if (!returns.length) {
       return res.json({
         success: true,
-        message: "No returns found for this customer",
+        message: "No returns found",
         returns: [],
       });
     }
 
-    // Aggregate totals per purchase
+    // Map results to a clear structure
     const result = returns.map((ret) => ({
       returnId: ret.id,
       purchaseId: ret.purchaseId,
