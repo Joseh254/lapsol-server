@@ -46,7 +46,6 @@ export async function CreatePurchase(req, res) {
         const { productname, price, details, category, quantity } =
           item.newProduct;
 
-        // Ensure mandatory fields
         if (!productname || price === undefined) {
           return res.status(400).json({
             success: false,
@@ -54,15 +53,13 @@ export async function CreatePurchase(req, res) {
           });
         }
 
-        // Upsert product: create if not exists, otherwise increment stock
+        // Upsert product
         const newProd = await prisma.products.upsert({
           where: { productname },
-          update: {
-            quantity: { increment: quantity || 1 },
-          },
+          update: { quantity: { increment: quantity || 1 } },
           create: {
             productname,
-            price, // purchase price does not overwrite existing price
+            price,
             details: details ?? "No details provided",
             category: category ?? "Uncategorized",
             quantity: quantity || 1,
@@ -89,16 +86,13 @@ export async function CreatePurchase(req, res) {
         },
       });
 
-      total +=
-        (item.quantity || 1) * (item.unitPrice ?? item.newProduct?.price ?? 0);
+      total += (item.quantity || 1) * (item.unitPrice ?? item.newProduct?.price ?? 0);
 
       // Increment stock if existing product
       if (item.productId) {
         await prisma.products.update({
           where: { id: productId },
-          data: {
-            quantity: { increment: item.quantity || 1 },
-          },
+          data: { quantity: { increment: item.quantity || 1 } },
         });
       }
     }
@@ -112,6 +106,26 @@ export async function CreatePurchase(req, res) {
       },
       include: { items: true, supplier: true, user: true },
     });
+
+    // Step 5: Update supplier type dynamically
+    const supplier = await prisma.customers.findUnique({ where: { id: customerId } });
+
+    if (supplier) {
+      let newType = supplier.type;
+
+      if (supplier.type === "CUSTOMER") {
+        newType = "BOTH"; // purchased from a customer → now both
+      } else if (supplier.type === "SUPPLIER" || supplier.type === "BOTH") {
+        newType = supplier.type; // already supplier or both
+      }
+
+      if (newType !== supplier.type) {
+        await prisma.customers.update({
+          where: { id: customerId },
+          data: { type: newType },
+        });
+      }
+    }
 
     res.status(201).json({
       success: true,
