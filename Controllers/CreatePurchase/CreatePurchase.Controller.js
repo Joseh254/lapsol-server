@@ -1,18 +1,38 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
+// Controller to create purchase
 export async function CreatePurchase(req, res) {
   try {
-    const { customerId, userId, type, items } = req.body;
+    const { customerId, type, items } = req.body;
+    const userId = req.user?.id; // extracted from UserAuth middleware
 
-    // Step 1: Create purchase record
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ success: false, message: "User not authenticated" });
+    }
+
+    if (!customerId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Supplier (customerId) is required" });
+    }
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "At least one item is required" });
+    }
+
+    // Step 1: Create purchase and connect supplier + user
     const purchase = await prisma.purchase.create({
       data: {
-        customerId,
-        userId,
-        type,
+        type: type || "cash",
         total: 0,
         balance: 0,
+        supplier: { connect: { id: customerId } },
+        user: { connect: { id: userId } },
       },
     });
 
@@ -23,20 +43,29 @@ export async function CreatePurchase(req, res) {
       let productId = item.productId;
 
       if (!productId && item.newProduct) {
-        const { productname, price, details, category } = item.newProduct;
+        const { productname, price, details, category, quantity } =
+          item.newProduct;
 
-        // Fallback defaults if fields are missing
+        // Ensure mandatory fields
+        if (!productname || price === undefined) {
+          return res.status(400).json({
+            success: false,
+            message: "Product name and price are required",
+          });
+        }
+
+        // Upsert product: create if not exists, otherwise increment stock
         const newProd = await prisma.products.upsert({
-          where: { productname }, // assumes productname is unique
+          where: { productname },
           update: {
-            quantity: { increment: item.quantity || 1 },
+            quantity: { increment: quantity || 1 },
           },
           create: {
             productname,
-            price: price ?? 0, // default 0 if missing
+            price, // purchase price does not overwrite existing price
             details: details ?? "No details provided",
             category: category ?? "Uncategorized",
-            quantity: item.quantity || 1, // default 1 if missing
+            quantity: quantity || 1,
           },
         });
 
@@ -44,24 +73,26 @@ export async function CreatePurchase(req, res) {
       }
 
       if (!productId) {
-        return res
-          .status(400)
-          .json({ error: "Either productId or newProduct must be provided" });
+        return res.status(400).json({
+          success: false,
+          message: "Either productId or newProduct must be provided",
+        });
       }
 
-      // Create purchase item
+      // Step 3: Create purchase item
       await prisma.purchaseitem.create({
         data: {
           purchaseId: purchase.id,
           productId,
           quantity: item.quantity || 1,
-          unitPrice: item.unitPrice ?? 0, // default 0 if missing
+          unitPrice: item.unitPrice ?? item.newProduct?.price ?? 0,
         },
       });
 
-      total += (item.quantity || 1) * (item.unitPrice ?? 0);
+      total +=
+        (item.quantity || 1) * (item.unitPrice ?? item.newProduct?.price ?? 0);
 
-      // If product already existed, increment stock here
+      // Increment stock if existing product
       if (item.productId) {
         await prisma.products.update({
           where: { id: productId },
@@ -72,21 +103,26 @@ export async function CreatePurchase(req, res) {
       }
     }
 
-    // Step 3: Update total & balance in purchase
+    // Step 4: Update total & balance
     const updatedPurchase = await prisma.purchase.update({
       where: { id: purchase.id },
       data: {
         total,
         balance: type === "credit" ? total : 0,
       },
-      include: { items: true },
+      include: { items: true, supplier: true, user: true },
     });
 
-    res.json(updatedPurchase);
+    res.status(201).json({
+      success: true,
+      message: "Purchase created successfully",
+      purchase: updatedPurchase,
+    });
   } catch (error) {
     console.error("Error creating purchase:", error);
     res.status(500).json({
-      error: "Error creating purchase",
+      success: false,
+      message: "Error creating purchase",
       details: error.message,
     });
   }
