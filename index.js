@@ -31,6 +31,7 @@ import createpurchase from "./Routes/CreatePurchase/CreatePurchase.Route.js";
 import getcustomerpurchases from "./Routes/GetCustomerPurchases/GetCustomerPurchases.Route.js";
 import returnpurchaseitem from "./Routes/ReturnPurchase/ReturnPurchase.Route.js";
 import fetchpurchasereturn from "./Routes/FetchPurchaseReturns/FetchPurchaseReturns.Route.js";
+import recordpurchasepayment from'./Routes/RecordPurchasePayment/RecordPurchasePayment.Route.js'
 
 dotenv.config();
 
@@ -77,6 +78,7 @@ app.use("/api/createpurchase", createpurchase);
 app.use("/api/getcustomerpurchases", getcustomerpurchases);
 app.use("/api/returnpurchaseitem", returnpurchaseitem);
 app.use("/api/fetchpurchasereturns", fetchpurchasereturn);
+app.use('/api/recordpurchasepayment',recordpurchasepayment)
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
