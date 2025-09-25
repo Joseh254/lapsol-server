@@ -21,6 +21,7 @@ model users {
   refreshToken  String?
   refreshTokens RefreshToken[]
   sales         sale[]
+  purchases     purchase[]
 }
 
 model RefreshToken {
@@ -42,24 +43,34 @@ model products {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   saleItems      saleitem[]
+  purchaseItems  purchaseitem[]
   productReturns productreturn[]
 }
+
 model customers {
   id             String          @id @default(uuid())
   name           String
   location       String
   details        String?
-  phonenumber    String          @unique
+  phonenumber    String?         @unique
+  type           CustomerType    @default(CUSTOMER) // CUSTOMER, SUPPLIER, BOTH
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
-  sales          sale[]          @relation("CustomerSales")
+  sales          sale[]          @relation("CustomerSales")  // Selling to them
+  purchases      purchase[]                               // Buying from them
   productReturns productreturn[]
+}
+
+enum CustomerType {
+  CUSTOMER
+  SUPPLIER
+  BOTH
 }
 
 model sale {
   id             String          @id @default(uuid())
   createdAt      DateTime        @default(now())
-  type           String?         @default("credit")
+  type           String?         @default("credit") // credit or cash
   total          Int
   balance        Int
   userId         String
@@ -108,8 +119,47 @@ model productreturn {
   sale     sale      @relation(fields: [saleId], references: [id], onDelete: Cascade)
 }
 
+model purchase {
+  id         String           @id @default(uuid())
+  customerId String
+  userId     String
+  type       String?
+  total      Int
+  balance    Int
+  createdAt  DateTime         @default(now())
+
+  supplier   customers        @relation(fields: [customerId], references: [id])
+  user       users            @relation(fields: [userId], references: [id])
+  items      purchaseitem[]
+  payments   purchasepayment[]   // 👈 Add this line
+}
+
+
+
+model purchaseitem {
+  id          String   @id @default(uuid())
+  purchaseId  String
+  productId   String
+  quantity    Int
+  unitPrice   Int
+  createdAt   DateTime @default(now())
+
+  purchase    purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  product     products @relation(fields: [productId], references: [id])
+}
+
+model purchasepayment {
+  id          String        @id @default(uuid())
+  amount      Int
+  method      PaymentMethod @default(CREDIT)
+  createdAt   DateTime      @default(now())
+  purchaseId  String
+
+  purchase    purchase      @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+}
+
 enum PaymentMethod {
-  CREDIT // default
+  CREDIT
   CASH
   MPESA
   PAYBILL
