@@ -34,17 +34,18 @@ model RefreshToken {
 }
 
 model products {
-  id             String          @id @default(uuid())
-  productname    String          @unique
-  price          Int
-  details        String
-  category       String
-  quantity       Int             @default(5)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  saleItems      saleitem[]
-  purchaseItems  purchaseitem[]
-  productReturns productreturn[]
+  id              String           @id @default(uuid())
+  productname     String           @unique
+  price           Int
+  details         String
+  category        String
+  quantity        Int              @default(5)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  saleItems       saleitem[]
+  purchaseItems   purchaseitem[]
+  productReturns  productreturn[]
+  purchaseReturns purchasereturn[]
 }
 
 model customers {
@@ -56,8 +57,8 @@ model customers {
   type           CustomerType    @default(CUSTOMER) // CUSTOMER, SUPPLIER, BOTH
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
-  sales          sale[]          @relation("CustomerSales")  // Selling to them
-  purchases      purchase[]                               // Buying from them
+  sales          sale[]          @relation("CustomerSales") // Selling to them
+  purchases      purchase[] // Buying from them
   productReturns productreturn[]
 }
 
@@ -79,8 +80,8 @@ model sale {
   saleItems      saleitem[]
   productReturns productreturn[]
 
-  customer       customers       @relation("CustomerSales", fields: [customerId], references: [id], onDelete: Cascade)
-  user           users           @relation(fields: [userId], references: [id])
+  customer customers @relation("CustomerSales", fields: [customerId], references: [id], onDelete: Cascade)
+  user     users     @relation(fields: [userId], references: [id])
 }
 
 model payment {
@@ -90,7 +91,7 @@ model payment {
   createdAt DateTime      @default(now())
   saleId    String
 
-  sale      sale          @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  sale sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
 }
 
 model saleitem {
@@ -101,8 +102,8 @@ model saleitem {
   unitPrice Int
   createdAt DateTime @default(now())
 
-  sale      sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  product   products @relation(fields: [productId], references: [id])
+  sale    sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product products @relation(fields: [productId], references: [id])
 }
 
 model productreturn {
@@ -120,42 +121,53 @@ model productreturn {
 }
 
 model purchase {
-  id         String           @id @default(uuid())
+  id         String   @id @default(uuid())
   customerId String
   userId     String
   type       String?
   total      Int
   balance    Int
-  createdAt  DateTime         @default(now())
+  createdAt  DateTime @default(now())
 
-  supplier   customers        @relation(fields: [customerId], references: [id])
-  user       users            @relation(fields: [userId], references: [id])
-  items      purchaseitem[]
-  payments   purchasepayment[]   // 👈 Add this line
+  supplier        customers         @relation(fields: [customerId], references: [id])
+  user            users             @relation(fields: [userId], references: [id])
+  items           purchaseitem[]
+  payments        purchasepayment[]
+  purchaseReturns purchasereturn[] // 👈 Add this line
 }
 
-
-
 model purchaseitem {
-  id          String   @id @default(uuid())
-  purchaseId  String
-  productId   String
-  quantity    Int
-  unitPrice   Int
-  createdAt   DateTime @default(now())
+  id         String   @id @default(uuid())
+  purchaseId String
+  productId  String
+  quantity   Int
+  unitPrice  Int
+  createdAt  DateTime @default(now())
 
-  purchase    purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
-  product     products @relation(fields: [productId], references: [id])
+  purchase purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  product  products @relation(fields: [productId], references: [id])
 }
 
 model purchasepayment {
-  id          String        @id @default(uuid())
-  amount      Int
-  method      PaymentMethod @default(CREDIT)
-  createdAt   DateTime      @default(now())
-  purchaseId  String
+  id         String        @id @default(uuid())
+  amount     Int
+  method     PaymentMethod @default(CREDIT)
+  createdAt  DateTime      @default(now())
+  purchaseId String
 
-  purchase    purchase      @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  purchase purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+}
+
+model purchasereturn {
+  id           String   @id @default(uuid())
+  purchaseId   String
+  productId    String
+  quantity     Int
+  refundAmount Int
+  createdAt    DateTime @default(now())
+
+  purchase purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  product  products @relation(fields: [productId], references: [id])
 }
 
 enum PaymentMethod {
