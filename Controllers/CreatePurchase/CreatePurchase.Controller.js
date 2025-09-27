@@ -86,7 +86,8 @@ export async function CreatePurchase(req, res) {
         },
       });
 
-      total += (item.quantity || 1) * (item.unitPrice ?? item.newProduct?.price ?? 0);
+      total +=
+        (item.quantity || 1) * (item.unitPrice ?? item.newProduct?.price ?? 0);
 
       // Increment stock if existing product
       if (item.productId) {
@@ -108,7 +109,9 @@ export async function CreatePurchase(req, res) {
     });
 
     // Step 5: Update supplier type dynamically
-    const supplier = await prisma.customers.findUnique({ where: { id: customerId } });
+    const supplier = await prisma.customers.findUnique({
+      where: { id: customerId },
+    });
 
     if (supplier) {
       let newType = supplier.type;
@@ -133,7 +136,7 @@ export async function CreatePurchase(req, res) {
       purchase: updatedPurchase,
     });
   } catch (error) {
-    console.error("Error creating purchase:", error);
+    console.log("Error creating purchase:", error);
     res.status(500).json({
       success: false,
       message: "Error creating purchase",

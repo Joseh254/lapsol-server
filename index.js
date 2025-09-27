@@ -31,9 +31,9 @@ import createpurchase from "./Routes/CreatePurchase/CreatePurchase.Route.js";
 import getcustomerpurchases from "./Routes/GetCustomerPurchases/GetCustomerPurchases.Route.js";
 import returnpurchaseitem from "./Routes/ReturnPurchase/ReturnPurchase.Route.js";
 import fetchpurchasereturn from "./Routes/FetchPurchaseReturns/FetchPurchaseReturns.Route.js";
-import recordpurchasepayment from'./Routes/RecordPurchasePayment/RecordPurchasePayment.Route.js'
-import addsupplier from './Routes/AddSupplier/AddSupplier.Route.js';
-import fetchsuppliers from './Routes/FetchSuppliers/FetchSuppliers.Route.js'
+import recordpurchasepayment from "./Routes/RecordPurchasePayment/RecordPurchasePayment.Route.js";
+import addsupplier from "./Routes/AddSupplier/AddSupplier.Route.js";
+import fetchsuppliers from "./Routes/FetchSuppliers/FetchSuppliers.Route.js";
 
 dotenv.config();
 
@@ -80,14 +80,15 @@ app.use("/api/createpurchase", createpurchase);
 app.use("/api/getcustomerpurchases", getcustomerpurchases);
 app.use("/api/returnpurchaseitem", returnpurchaseitem);
 app.use("/api/fetchpurchasereturns", fetchpurchasereturn);
-app.use('/api/recordpurchasepayment',recordpurchasepayment)
-app.use('/api/addsupplier',addsupplier)
-app.use('/api/fetchsuppliers',fetchsuppliers)
+app.use("/api/recordpurchasepayment", recordpurchasepayment);
+app.use("/api/addsupplier", addsupplier);
+app.use("/api/fetchsuppliers", fetchsuppliers);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });
 // docker pull josephmbugua/lapsol-server:latest
+//update supplier
 
 //sell products to customers on credit
 //view customer balances for individual customer

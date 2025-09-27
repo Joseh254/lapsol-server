@@ -88,7 +88,7 @@ export async function FetchPurchaseReturns(req, res) {
       if (!purchasesMap[purchaseId].products[prodId]) {
         // Find original quantity purchased
         const purchaseItem = ret.purchase.items.find(
-          (item) => item.productId === prodId
+          (item) => item.productId === prodId,
         );
         const purchasedQty = purchaseItem ? purchaseItem.quantity : 0;
         const unitPrice = purchaseItem ? purchaseItem.unitPrice : 0;
@@ -105,9 +105,11 @@ export async function FetchPurchaseReturns(req, res) {
       }
 
       // Add this return
-      purchasesMap[purchaseId].products[prodId].quantityReturned += ret.quantity;
+      purchasesMap[purchaseId].products[prodId].quantityReturned +=
+        ret.quantity;
       purchasesMap[purchaseId].products[prodId].remainingQty -= ret.quantity;
-      purchasesMap[purchaseId].products[prodId].totalRefunded += ret.refundAmount;
+      purchasesMap[purchaseId].products[prodId].totalRefunded +=
+        ret.refundAmount;
     });
 
     // Flatten products per purchase

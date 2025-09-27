@@ -1,14 +1,17 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, CustomerType } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function FetchAllCustomersController(request, response) {
   try {
     const customers = await prisma.customers.findMany({
+      where: {
+        type: {
+          in: [CustomerType.CUSTOMER, CustomerType.BOTH], // only customer or both
+        },
+      },
       include: {
         sales: {
-          select: {
-            balance: true,
-          },
+          select: { balance: true },
         },
       },
     });
@@ -26,7 +29,6 @@ export async function FetchAllCustomersController(request, response) {
         0,
       );
 
-      // Return customer without full sales list, just balance
       const { sales, ...rest } = customer;
 
       return {
