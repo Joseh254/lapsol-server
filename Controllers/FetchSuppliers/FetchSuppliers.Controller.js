@@ -10,7 +10,7 @@ export async function FetchSuppliersController(req, res) {
     const { id } = req.query;
 
     if (id) {
-      // Fetch single supplier by ID
+      // Fetch single supplier by ID with balance
       const supplier = await prisma.customers.findFirst({
         where: {
           id,
@@ -27,6 +27,11 @@ export async function FetchSuppliersController(req, res) {
           type: true,
           createdAt: true,
           updatedAt: true,
+          purchases: {
+            select: {
+              balance: true,
+            },
+          },
         },
       });
 
@@ -37,14 +42,19 @@ export async function FetchSuppliersController(req, res) {
         });
       }
 
+      const totalBalance = supplier.purchases.reduce((sum, p) => sum + p.balance, 0);
+
       return res.json({
         success: true,
         message: "Supplier fetched successfully",
-        supplier,
+        supplier: {
+          ...supplier,
+          balance: totalBalance,
+        },
       });
     }
 
-    // Fetch all suppliers
+    // Fetch all suppliers with balances
     const suppliers = await prisma.customers.findMany({
       where: {
         type: {
@@ -61,13 +71,26 @@ export async function FetchSuppliersController(req, res) {
         type: true,
         createdAt: true,
         updatedAt: true,
+        purchases: {
+          select: {
+            balance: true,
+          },
+        },
       },
+    });
+
+    const suppliersWithBalance = suppliers.map((supplier) => {
+      const totalBalance = supplier.purchases.reduce((sum, p) => sum + p.balance, 0);
+      return {
+        ...supplier,
+        balance: totalBalance,
+      };
     });
 
     res.json({
       success: true,
-      message: `Fetched ${suppliers.length} suppliers`,
-      suppliers,
+      message: `Fetched ${suppliersWithBalance.length} suppliers`,
+      suppliers: suppliersWithBalance,
     });
   } catch (error) {
     console.error("Error fetching suppliers:", error);
