@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 export async function FetchPayments(req, res) {
   try {
-    const { customerId } = req.query;
+    const { customerId, mode = "flat" } = req.query;
 
     const sales = await prisma.sale.findMany({
       where: {
@@ -11,8 +11,8 @@ export async function FetchPayments(req, res) {
           customerId ? { customerId } : {},
           {
             OR: [
-              { type: { not: "credit" } }, // Non-credit sales
-              { payments: { some: {} } }, // Credit sales with at least one payment
+              { type: { not: "credit" } }, // Non-credit
+              { payments: { some: {} } }, // Or credit with some payments
             ],
           },
         ],
@@ -26,32 +26,61 @@ export async function FetchPayments(req, res) {
             unitPrice: true,
           },
         },
-        payments: { select: { amount: true, method: true, createdAt: true } },
+        payments: {
+          select: {
+            amount: true,
+            method: true,
+            createdAt: true,
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
 
-    const results = sales.map((s) => {
-      const totalSaleAmount = s.total;
+    // --- MODE: FLAT ---
+    if (mode === "flat") {
+      const flatPayments = [];
+
+      sales.forEach((sale) => {
+        sale.payments.forEach((payment) => {
+          flatPayments.push({
+            amount: payment.amount,
+            method: payment.method,
+            date: payment.createdAt,
+
+            customer: sale.customer,
+            saleId: sale.id,
+            saleDate: sale.createdAt,
+          });
+        });
+      });
+
+      const total = flatPayments.reduce((sum, p) => sum + p.amount, 0);
+
+      return res.status(200).json({
+        success: true,
+        message: `Fetched ${flatPayments.length} payment(s) successfully`,
+        totalPayments: total,
+        data: flatPayments,
+      });
+    }
+
+    // --- MODE: FULL ---
+    const fullResults = sales.map((s) => {
       const totalPaid = s.payments.reduce((sum, p) => sum + p.amount, 0);
-      const balance = s.balance;
 
       return {
         saleId: s.id,
-        customer: {
-          id: s.customer.id,
-          name: s.customer.name,
-          phonenumber: s.customer.phonenumber,
-        },
+        customer: s.customer,
         products: s.saleItems.map((item) => ({
           name: item.product.productname,
           quantity: item.quantity,
           unitPrice: item.unitPrice,
           total: item.quantity * item.unitPrice,
         })),
-        total: totalSaleAmount,
+        total: s.total,
         paid: totalPaid,
-        balance,
+        balance: s.balance,
         type: s.type,
         createdAt: s.createdAt,
         payments: s.payments,
@@ -60,8 +89,8 @@ export async function FetchPayments(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: `Fetched ${results.length} payment(s) successfully`,
-      data: results,
+      message: `Fetched ${fullResults.length} sale(s) with payments successfully`,
+      data: fullResults,
     });
   } catch (error) {
     console.error("❌ Error in FetchPayments:", error);

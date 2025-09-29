@@ -42,7 +42,10 @@ export async function FetchSuppliersController(req, res) {
         });
       }
 
-      const totalBalance = supplier.purchases.reduce((sum, p) => sum + p.balance, 0);
+      const totalBalance = supplier.purchases.reduce(
+        (sum, p) => sum + p.balance,
+        0,
+      );
 
       return res.json({
         success: true,
@@ -80,7 +83,10 @@ export async function FetchSuppliersController(req, res) {
     });
 
     const suppliersWithBalance = suppliers.map((supplier) => {
-      const totalBalance = supplier.purchases.reduce((sum, p) => sum + p.balance, 0);
+      const totalBalance = supplier.purchases.reduce(
+        (sum, p) => sum + p.balance,
+        0,
+      );
       return {
         ...supplier,
         balance: totalBalance,
