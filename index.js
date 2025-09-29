@@ -89,7 +89,7 @@ app.use("/api/deletesupplier", deletesupplier);
 app.use("/api/fetchpurchase", fetchpurchase);
 
 app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
+  console.log(`Server running on port ${process.env.PORT}`); 
 });
 // docker pull josephmbugua/lapsol-server:latest
 //update supplier

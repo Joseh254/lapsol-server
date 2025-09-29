@@ -1,18 +1,28 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-/**
- * Fetch purchase returns with detailed breakdown
- * Query param: customerId (optional)
- */
 export async function FetchPurchaseReturns(req, res) {
   try {
-    const { customerId } = req.query;
+    const { customerId, supplierId } = req.query;
 
-    // Dynamic filter
-    const whereCondition = customerId ? { purchase: { customerId } } : {};
+    // Build where filter
+    const whereCondition = {};
 
-    // Fetch returns with purchase and product details
+    if (customerId || supplierId) {
+      whereCondition.purchase = {
+        is: {
+          ...(customerId && { customerId }),   // filter by purchase.customerId
+          ...(supplierId && {
+            supplier: {
+              is: {
+                id: supplierId,
+              },
+            },
+          }),
+        },
+      };
+    }
+
     const returns = await prisma.purchasereturn.findMany({
       where: whereCondition,
       include: {
@@ -53,10 +63,12 @@ export async function FetchPurchaseReturns(req, res) {
           },
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
-    if (!returns.length) {
+    if (returns.length === 0) {
       return res.json({
         success: true,
         message: "No returns found",
@@ -65,7 +77,6 @@ export async function FetchPurchaseReturns(req, res) {
       });
     }
 
-    // Aggregate returns per purchase
     const purchasesMap = {};
     let totalOwed = 0;
 
@@ -79,16 +90,16 @@ export async function FetchPurchaseReturns(req, res) {
           createdAt: ret.purchase.createdAt,
           total: ret.purchase.total,
           balance: ret.purchase.balance,
-          totalOwed: ret.purchase.type === "credit" ? ret.purchase.balance : 0,
+          totalOwed:
+            ret.purchase.type === "credit" ? ret.purchase.balance : 0,
           products: {},
         };
       }
 
       const prodId = ret.productId;
       if (!purchasesMap[purchaseId].products[prodId]) {
-        // Find original quantity purchased
         const purchaseItem = ret.purchase.items.find(
-          (item) => item.productId === prodId,
+          (item) => item.productId === prodId
         );
         const purchasedQty = purchaseItem ? purchaseItem.quantity : 0;
         const unitPrice = purchaseItem ? purchaseItem.unitPrice : 0;
@@ -104,15 +115,11 @@ export async function FetchPurchaseReturns(req, res) {
         };
       }
 
-      // Add this return
-      purchasesMap[purchaseId].products[prodId].quantityReturned +=
-        ret.quantity;
+      purchasesMap[purchaseId].products[prodId].quantityReturned += ret.quantity;
       purchasesMap[purchaseId].products[prodId].remainingQty -= ret.quantity;
-      purchasesMap[purchaseId].products[prodId].totalRefunded +=
-        ret.refundAmount;
+      purchasesMap[purchaseId].products[prodId].totalRefunded += ret.refundAmount;
     });
 
-    // Flatten products per purchase
     const result = Object.values(purchasesMap).map((purchase) => {
       totalOwed += purchase.totalOwed;
       return {
