@@ -36,6 +36,7 @@ import addsupplier from "./Routes/AddSupplier/AddSupplier.Route.js";
 import fetchsuppliers from "./Routes/FetchSuppliers/FetchSuppliers.Route.js";
 import deletesupplier from "./Routes/DeleteSupplier/DeleteSupplier.Route.js";
 import fetchpurchase from "./Routes/FetchPurchase/FetchPurchase.Route.js";
+import fetchsupplierpayment from "./Routes/FetchSupplierPayment/FetchSupplierPayment.Route.js";
 
 dotenv.config();
 
@@ -87,9 +88,10 @@ app.use("/api/addsupplier", addsupplier);
 app.use("/api/fetchsuppliers", fetchsuppliers);
 app.use("/api/deletesupplier", deletesupplier);
 app.use("/api/fetchpurchase", fetchpurchase);
+app.use("/api/fetchsupplierpurchasepayments", fetchsupplierpayment);
 
 app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`); 
+  console.log(`Server running on port ${process.env.PORT}`);
 });
 // docker pull josephmbugua/lapsol-server:latest
 //update supplier

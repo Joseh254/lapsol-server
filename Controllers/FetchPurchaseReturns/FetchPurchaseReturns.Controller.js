@@ -11,7 +11,7 @@ export async function FetchPurchaseReturns(req, res) {
     if (customerId || supplierId) {
       whereCondition.purchase = {
         is: {
-          ...(customerId && { customerId }),   // filter by purchase.customerId
+          ...(customerId && { customerId }), // filter by purchase.customerId
           ...(supplierId && {
             supplier: {
               is: {
@@ -90,8 +90,7 @@ export async function FetchPurchaseReturns(req, res) {
           createdAt: ret.purchase.createdAt,
           total: ret.purchase.total,
           balance: ret.purchase.balance,
-          totalOwed:
-            ret.purchase.type === "credit" ? ret.purchase.balance : 0,
+          totalOwed: ret.purchase.type === "credit" ? ret.purchase.balance : 0,
           products: {},
         };
       }
@@ -99,7 +98,7 @@ export async function FetchPurchaseReturns(req, res) {
       const prodId = ret.productId;
       if (!purchasesMap[purchaseId].products[prodId]) {
         const purchaseItem = ret.purchase.items.find(
-          (item) => item.productId === prodId
+          (item) => item.productId === prodId,
         );
         const purchasedQty = purchaseItem ? purchaseItem.quantity : 0;
         const unitPrice = purchaseItem ? purchaseItem.unitPrice : 0;
@@ -115,9 +114,11 @@ export async function FetchPurchaseReturns(req, res) {
         };
       }
 
-      purchasesMap[purchaseId].products[prodId].quantityReturned += ret.quantity;
+      purchasesMap[purchaseId].products[prodId].quantityReturned +=
+        ret.quantity;
       purchasesMap[purchaseId].products[prodId].remainingQty -= ret.quantity;
-      purchasesMap[purchaseId].products[prodId].totalRefunded += ret.refundAmount;
+      purchasesMap[purchaseId].products[prodId].totalRefunded +=
+        ret.refundAmount;
     });
 
     const result = Object.values(purchasesMap).map((purchase) => {
