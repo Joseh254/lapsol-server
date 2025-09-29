@@ -3,10 +3,10 @@ const prisma = new PrismaClient();
 
 export async function FetchPurchaseController(req, res) {
   try {
-    const { id } = req.query;
+    const { id, userId, supplierId } = req.query;
 
+    // If `id` is provided, fetch that specific purchase
     if (id) {
-      // Fetch specific purchase by ID
       const purchase = await prisma.purchase.findUnique({
         where: { id: String(id) },
         include: {
@@ -38,7 +38,16 @@ export async function FetchPurchaseController(req, res) {
             },
           },
           payments: true,
-          purchaseReturns: true,
+          purchaseReturns: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  productname: true,
+                },
+              },
+            },
+          },
         },
       });
 
@@ -56,7 +65,70 @@ export async function FetchPurchaseController(req, res) {
       });
     }
 
-    // Fetch all purchases
+    // If userId or supplierId is provided (but no purchase id) => filter accordingly
+    if (userId || supplierId) {
+      // Build a `where` filter object dynamically
+      const whereFilter = {};
+      if (userId) {
+        whereFilter.userId = String(userId);
+      }
+      if (supplierId) {
+        // In your schema, the field is `customerId` in purchase,
+        // which links to supplier / customer
+        whereFilter.customerId = String(supplierId);
+      }
+
+      const filteredPurchases = await prisma.purchase.findMany({
+        where: whereFilter,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          supplier: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              username: true,
+            },
+          },
+          items: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  productname: true,
+                  price: true,
+                },
+              },
+            },
+          },
+          payments: true,
+          purchaseReturns: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  productname: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return res.json({
+        success: true,
+        message: `Fetched ${filteredPurchases.length} purchases`,
+        purchases: filteredPurchases,
+      });
+    }
+
+    // Default: fetch all purchases
     const purchases = await prisma.purchase.findMany({
       orderBy: {
         createdAt: "desc",
@@ -74,8 +146,28 @@ export async function FetchPurchaseController(req, res) {
             username: true,
           },
         },
-        items: true,
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                productname: true,
+                price: true,
+              },
+            },
+          },
+        },
         payments: true,
+        purchaseReturns: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                productname: true,
+              },
+            },
+          },
+        },
       },
     });
 
