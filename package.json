@@ -15,6 +15,7 @@
   "type": "module",
   "dependencies": {
     "@prisma/client": "^6.15.0",
+    "africastalking": "^0.7.7",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
