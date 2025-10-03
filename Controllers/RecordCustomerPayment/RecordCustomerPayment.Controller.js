@@ -76,6 +76,7 @@ export async function RecordCustomerPaymentController(request, response) {
       }),
     ]);
 
+
     return response.status(201).json({
       success: true,
       message: `Payment of ${amount} recorded successfully as ${normalizedMethod}`,
@@ -83,7 +84,10 @@ export async function RecordCustomerPaymentController(request, response) {
         payment,
         updatedSale,
       },
-    });
+
+    }
+  );
+    
   } catch (error) {
     console.error("❌ Error recording customer payment:", error);
 

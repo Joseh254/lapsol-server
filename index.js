@@ -38,6 +38,7 @@ import deletesupplier from "./Routes/DeleteSupplier/DeleteSupplier.Route.js";
 import fetchpurchase from "./Routes/FetchPurchase/FetchPurchase.Route.js";
 import fetchsupplierpayment from "./Routes/FetchSupplierPayment/FetchSupplierPayment.Route.js";
 import sendmessage from "./Routes/SendMessage/SendMessage.Route.js";
+import fetchcustomerreturns from './Routes/FetchCustomerReturn/FetchCustomerReturn.Route.js'
 
 dotenv.config();
 
@@ -91,7 +92,7 @@ app.use("/api/deletesupplier", deletesupplier);
 app.use("/api/fetchpurchase", fetchpurchase);
 app.use("/api/fetchsupplierpurchasepayments", fetchsupplierpayment);
 app.use("/api/sendmessage", sendmessage);
-
+app.use("/api/fetchcustomerreturns",fetchcustomerreturns)
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });

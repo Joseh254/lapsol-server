@@ -13,7 +13,7 @@ export async function ReturnProductController(request, response) {
       });
     }
 
-    // 1. Find a sale item for this customer & product
+    // 1. Find the latest sale item for this customer & product
     const saleItem = await prisma.saleitem.findFirst({
       where: {
         productId,
@@ -26,7 +26,7 @@ export async function ReturnProductController(request, response) {
         sale: true,
         product: true,
       },
-      orderBy: { createdAt: "desc" }, // pick the most recent one
+      orderBy: { createdAt: "desc" },
     });
 
     if (!saleItem) {
@@ -45,7 +45,7 @@ export async function ReturnProductController(request, response) {
 
     const refundAmount = saleItem.unitPrice * quantity;
 
-    // 2. Update or delete the sale item
+    // 2. Update or delete sale item
     if (quantity === saleItem.quantity) {
       await prisma.saleitem.delete({ where: { id: saleItem.id } });
     } else {
@@ -65,7 +65,16 @@ export async function ReturnProductController(request, response) {
       },
     });
 
-    // 4. Log return (optional but important)
+    // 4. Adjust the sale balance (reduce owed amount)
+    await prisma.sale.update({
+      where: { id: saleItem.saleId },
+      data: {
+        balance: { decrement: refundAmount },
+        total: { decrement: refundAmount },
+      },
+    });
+
+    // 5. Log return
     await prisma.productreturn.create({
       data: {
         customerId,
@@ -81,6 +90,7 @@ export async function ReturnProductController(request, response) {
       message: "Product returned successfully",
       refundAmount,
       product: saleItem.product.productname,
+      saleId: saleItem.saleId,
       customerId,
     });
   } catch (error) {
