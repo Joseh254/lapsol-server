@@ -1,12 +1,12 @@
 import { PrismaClient, PaymentMethod } from "@prisma/client";
 const prisma = new PrismaClient();
 
-/**
- * Records a customer payment and updates the sale balance.
- * Can be reused in CreateSale or RecordCustomerPaymentController.
- */
-export async function recordPaymentService({ saleId, amount, method }) {
-  if (!saleId) throw new Error("Sale ID is required");
+export async function recordPurchasePaymentService({
+  purchaseId,
+  amount,
+  method,
+}) {
+  if (!purchaseId) throw new Error("Purchase ID is required");
   if (!amount || amount <= 0) throw new Error("Amount must be greater than 0");
   if (!method) throw new Error("Payment method is required");
 
@@ -19,30 +19,31 @@ export async function recordPaymentService({ saleId, amount, method }) {
     );
   }
 
-  const sale = await prisma.sale.findUnique({
-    where: { id: saleId },
+  const purchase = await prisma.purchase.findUnique({
+    where: { id: purchaseId },
     select: { balance: true },
   });
 
-  if (!sale) throw new Error("Sale not found");
+  if (!purchase) throw new Error("Purchase not found");
 
-  if (amount > sale.balance) {
-    throw new Error(
-      `Payment exceeds balance. Current balance is ${sale.balance}`,
+  // 💡 Don't block payments when balance = 0
+  if (purchase.balance === 0 && normalizedMethod !== "CREDIT") {
+    console.warn(
+      "Warning: Purchase has no balance, but payment is still recorded.",
     );
   }
 
-  // ✅ Record payment + update sale balance in a transaction
-  const [payment, updatedSale] = await prisma.$transaction([
-    prisma.payment.create({
+  // ✅ Use `purchasepayment` model instead of `payment`
+  const [payment, updatedPurchase] = await prisma.$transaction([
+    prisma.purchasepayment.create({
       data: {
-        saleId,
+        purchaseId,
         amount,
         method: normalizedMethod,
       },
     }),
-    prisma.sale.update({
-      where: { id: saleId },
+    prisma.purchase.update({
+      where: { id: purchaseId },
       data: { balance: { decrement: amount } },
       select: { id: true, balance: true },
     }),
@@ -50,7 +51,7 @@ export async function recordPaymentService({ saleId, amount, method }) {
 
   return {
     payment,
-    updatedSale,
+    updatedPurchase,
     message: `Payment of ${amount} recorded successfully as ${normalizedMethod}`,
   };
 }

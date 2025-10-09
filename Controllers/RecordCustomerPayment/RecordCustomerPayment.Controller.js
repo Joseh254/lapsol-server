@@ -1,4 +1,4 @@
-import { recordPaymentService } from "../../Services/RecordPayment/RecordPaymentService.js";
+import { recordCustomerPaymentService } from "../../Services/RecordPayment/RecordCustomerPaymentService.js";
 
 export async function RecordCustomerPaymentController(req, res) {
   try {

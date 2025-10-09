@@ -76,6 +76,8 @@ model sale {
   balance        Int
   userId         String
   customerId     String
+    narration  String?    // ✅ optional
+  details    String?
   payments       payment[]
   saleItems      saleitem[]
   productReturns productreturn[]

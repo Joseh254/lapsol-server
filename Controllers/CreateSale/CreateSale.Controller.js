@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { recordPaymentService } from "../../Services/RecordPayment/RecordPaymentService.js";
+import { recordCustomerPaymentService } from "../../Services/RecordPayment/RecordCustomerPaymentService.js";
 const prisma = new PrismaClient();
 
 export async function CreateSale(request, response) {
-  const { type, customerId, items } = request.body;
+  const { type, customerId, items, narration, details } = request.body; // ✅ added narration & details
 
   if (!Array.isArray(items) || items.length === 0) {
     return response
@@ -55,6 +55,9 @@ export async function CreateSale(request, response) {
           balance: total,
           userId,
           customerId,
+          // ✅ only include optional fields if provided
+          ...(narration && { narration }),
+          ...(details && { details }),
           saleItems: { create: saleItemsData },
         },
         include: { saleItems: true },
@@ -73,7 +76,7 @@ export async function CreateSale(request, response) {
 
     // 💰 If sale is not on credit, record payment via the service
     if (type.toLowerCase() !== "credit") {
-      await recordPaymentService({
+      await recordCustomerPaymentService({
         saleId: sale.id,
         amount: total,
         method: type,
