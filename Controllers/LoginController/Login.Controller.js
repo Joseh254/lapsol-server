@@ -33,6 +33,8 @@ export async function LoginController(request, response) {
       lastname: userExists.lastname,
       phonenumber: userExists.phonenumber,
       role: userExists.role,
+      email: userExists.email,
+      profilepicture: userExists.profilepicture,
     };
 
     // Generate short-lived access token

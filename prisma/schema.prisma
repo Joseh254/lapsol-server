@@ -15,6 +15,7 @@ model users {
   username      String
   phonenumber   String         @unique
   password      String
+  profilepicture String? @default("https://res.cloudinary.com/dukptptve/image/upload/v1759993873/mek9lgxbxubcgn9rabgo.png")
   role          String?        @default("user")
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt

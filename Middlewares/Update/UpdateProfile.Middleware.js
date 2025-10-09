@@ -1,8 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 export async function UpdateProfileMiddleware(request, response, next) {
-  const { email, firstname, lastname, username, phonenumber, password } =
-    request.body;
+  const {
+    email,
+    firstname,
+    lastname,
+    username,
+    phonenumber,
+    password,
+    profilepicture,
+  } = request.body;
 
   try {
     // Validate only if the field exists

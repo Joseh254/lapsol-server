@@ -2,8 +2,15 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function UpdateProfileController(request, response) {
-  const { email, firstname, lastname, username, phonenumber, password } =
-    request.body;
+  const {
+    email,
+    firstname,
+    lastname,
+    username,
+    phonenumber,
+    password,
+    profilepicture,
+  } = request.body;
 
   try {
     const updatedUser = await prisma.users.update({
@@ -15,6 +22,7 @@ export async function UpdateProfileController(request, response) {
         ...(username && { username }),
         ...(phonenumber && { phonenumber }),
         ...(password && { password }),
+        ...(profilepicture && { profilepicture }),
       },
       select: {
         id: true,
@@ -23,6 +31,7 @@ export async function UpdateProfileController(request, response) {
         firstname: true,
         lastname: true,
         phonenumber: true,
+        profilepicture: true,
       },
     });
 
