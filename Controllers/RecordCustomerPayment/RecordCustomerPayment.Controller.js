@@ -2,7 +2,7 @@ import { recordCustomerPaymentService } from "../../Services/RecordPayment/Recor
 
 export async function RecordCustomerPaymentController(req, res) {
   try {
-    const result = await recordPaymentService(req.body);
+    const result = await recordCustomerPaymentService(req.body);
     return res.status(201).json(result);
   } catch (error) {
     console.error("❌ Error recording customer payment:", error);
