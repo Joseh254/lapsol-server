@@ -1,35 +1,55 @@
 import { PrismaClient, CustomerType } from "@prisma/client";
 const prisma = new PrismaClient();
 
-/**
- * Fetch suppliers
- * Query param: id (optional) – fetch single supplier if provided
- */
 export async function FetchSuppliersController(req, res) {
   try {
     const { id } = req.query;
 
+    // --- Helper function to compute total balance ---
+    const calculateBalance = (purchases) =>
+      purchases.reduce((sum, p) => sum + p.balance, 0);
+
+    // --- Fetch single supplier by ID ---
     if (id) {
-      // Fetch single supplier by ID with balance
       const supplier = await prisma.customers.findFirst({
         where: {
           id,
-          type: {
-            in: [CustomerType.SUPPLIER, CustomerType.BOTH],
-          },
+          type: { in: [CustomerType.SUPPLIER, CustomerType.BOTH] },
         },
-        select: {
-          id: true,
-          name: true,
-          location: true,
-          details: true,
-          phonenumber: true,
-          type: true,
-          createdAt: true,
-          updatedAt: true,
+        include: {
           purchases: {
-            select: {
-              balance: true,
+            include: {
+              items: {
+                include: {
+                  product: true,
+                },
+              },
+              payments: true,
+              purchaseReturns: {
+                include: {
+                  product: true,
+                },
+              },
+            },
+          },
+          sales: {
+            include: {
+              saleItems: {
+                include: {
+                  product: true,
+                },
+              },
+              payments: true,
+              productReturns: {
+                include: {
+                  product: true,
+                },
+              },
+            },
+          },
+          productReturns: {
+            include: {
+              product: true,
             },
           },
         },
@@ -42,10 +62,7 @@ export async function FetchSuppliersController(req, res) {
         });
       }
 
-      const totalBalance = supplier.purchases.reduce(
-        (sum, p) => sum + p.balance,
-        0,
-      );
+      const totalBalance = calculateBalance(supplier.purchases);
 
       return res.json({
         success: true,
@@ -57,41 +74,55 @@ export async function FetchSuppliersController(req, res) {
       });
     }
 
-    // Fetch all suppliers with balances
+    // --- Fetch all suppliers with full details ---
     const suppliers = await prisma.customers.findMany({
       where: {
-        type: {
-          in: [CustomerType.SUPPLIER, CustomerType.BOTH],
-        },
+        type: { in: [CustomerType.SUPPLIER, CustomerType.BOTH] },
       },
       orderBy: { name: "asc" },
-      select: {
-        id: true,
-        name: true,
-        location: true,
-        details: true,
-        phonenumber: true,
-        type: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
         purchases: {
-          select: {
-            balance: true,
+          include: {
+            items: {
+              include: {
+                product: true,
+              },
+            },
+            payments: true,
+            purchaseReturns: {
+              include: {
+                product: true,
+              },
+            },
+          },
+        },
+        sales: {
+          include: {
+            saleItems: {
+              include: {
+                product: true,
+              },
+            },
+            payments: true,
+            productReturns: {
+              include: {
+                product: true,
+              },
+            },
+          },
+        },
+        productReturns: {
+          include: {
+            product: true,
           },
         },
       },
     });
 
-    const suppliersWithBalance = suppliers.map((supplier) => {
-      const totalBalance = supplier.purchases.reduce(
-        (sum, p) => sum + p.balance,
-        0,
-      );
-      return {
-        ...supplier,
-        balance: totalBalance,
-      };
-    });
+    const suppliersWithBalance = suppliers.map((supplier) => ({
+      ...supplier,
+      balance: calculateBalance(supplier.purchases),
+    }));
 
     res.json({
       success: true,
