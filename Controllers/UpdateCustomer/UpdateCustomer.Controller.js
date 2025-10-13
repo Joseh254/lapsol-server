@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function UpdateCustomerController(request, response) {
-  const { name, location, details, phonenumber } = request.body;
+  const { name, location, details, phonenumber,type } = request.body;
   const { id } = request.params;
 
   try {
@@ -13,6 +13,7 @@ export async function UpdateCustomerController(request, response) {
         ...(location && { location }),
         ...(details && { details }),
         ...(phonenumber && { phonenumber }),
+        ...(type && {type})
       },
       include: {
         sales: {
