@@ -13,7 +13,7 @@ export async function CreateSale(request, response) {
 
   try {
     const userId = request.user.id;
- 
+
     // Fetch all involved products
     const productIds = items.map((item) => item.productId);
     const products = await prisma.products.findMany({
@@ -37,16 +37,15 @@ export async function CreateSale(request, response) {
           message: `Not enough stock for ${product.productname}`,
         });
 
-    const customPrice = item.price ?? product.price;
+      const customPrice = item.price ?? product.price;
 
-total += customPrice * item.quantity;
+      total += customPrice * item.quantity;
 
-saleItemsData.push({
-  productId: product.id,
-  quantity: item.quantity,
-  unitPrice: customPrice,
-});
-
+      saleItemsData.push({
+        productId: product.id,
+        quantity: item.quantity,
+        unitPrice: customPrice,
+      });
     }
 
     // 🧾 Create sale transaction

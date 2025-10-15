@@ -16,6 +16,7 @@ import fetchallproducts from "./Routes/FetchAllProducts/FetchAllProducts.Route.j
 import fetchoneproduct from "./Routes/FetchOneProduct/FetchOneProduct.Route.js";
 import addcustomer from "./Routes/AddCustomer/AddCustomer.Route.js";
 import updatecustomer from "./Routes/UpdateCustomer/UpdateCustomer.Route.js";
+import updatesupplier from "./Routes/UpdateSupplier/UpdateSupplier.Route.js";
 import createsale from "./Routes/CreateSale/CreateSale.Route.js";
 import viewcustomerbalance from "./Routes/ViewCustomerBalance/ViewCustomerBalance.Route.js";
 import returnproduct from "./Routes/ReturnProduct/ReturnProduct.Route.js";
@@ -70,6 +71,7 @@ app.use("/api/fetchallproducts", fetchallproducts);
 app.use("/api/fetchoneproduct", fetchoneproduct);
 app.use("/api/addcustomer", addcustomer);
 app.use("/api/updatecustomer", updatecustomer);
+app.use("/api/updatesupplier", updatesupplier);
 app.use("/api/createsale", createsale);
 app.use("/api/viewcustomerbalance", viewcustomerbalance);
 app.use("/api/returnproduct", returnproduct);

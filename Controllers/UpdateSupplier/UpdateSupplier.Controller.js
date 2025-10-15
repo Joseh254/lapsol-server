@@ -1,12 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-export async function UpdateCustomerController(request, response) {
+export async function UpdateSupplierController(request, response) {
   const { name, location, details, phonenumber, type } = request.body;
   const { id } = request.params;
 
   try {
-    const updatedCustomer = await prisma.customers.update({
+    const updatedSupplier = await prisma.customers.update({
       where: { id },
       data: {
         ...(name && { name }),
@@ -25,13 +25,13 @@ export async function UpdateCustomerController(request, response) {
     });
 
     // Calculate total balance
-    const totalBalance = updatedCustomer.sales.reduce(
+    const totalBalance = updatedSupplier.sales.reduce(
       (sum, sale) => sum + sale.balance,
       0,
     );
 
     // Return customer without full sales list
-    const { sales, ...rest } = updatedCustomer;
+    const { sales, ...rest } = updatedSupplier;
 
     return response.status(200).json({
       success: true,
