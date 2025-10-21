@@ -27,7 +27,7 @@ export async function AddUserController(request, response) {
       },
     });
 
-    response.status(201).json({ success: true, data: newUser });
+    response.status(201).json({ success: true, data: newUser,message:"User added" });
   } catch (error) {
     console.log("error creating new user", error.message);
     return response

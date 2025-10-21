@@ -22,31 +22,31 @@ export async function AddCustomerMiddleware(request, response, next) {
       });
     }
 
-    if (name.length < 4 || name.length > 40) {
+    if (name.length < 3 || name.length > 90) {
       return response.status(400).json({
         success: false,
-        message: "Customer name must be between 4 and 40 characters",
+        message: "Customer name must be between 3 and 90 characters",
       });
     }
 
-    if (location.length < 4 || location.length > 40) {
+    if (location.length < 4 || location.length > 150) {
       return response.status(400).json({
         success: false,
-        message: "Location must be between 4 and 40 characters",
+        message: "Location must be between 4 and 150 characters",
       });
     }
 
-    if (details && details.length < 10) {
+    if (details && details.length < 5) {
       return response.status(400).json({
         success: false,
-        message: "Details must be at least 10 characters if provided",
+        message: "Details must be at least 5 characters if provided",
       });
     }
 
-    if (details && details.length > 40) {
+    if (details && details.length > 100) {
       return response.status(400).json({
         success: false,
-        message: "Details must not exceed 40 characters",
+        message: "Details must not exceed 100 characters",
       });
     }
 

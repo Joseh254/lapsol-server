@@ -32,24 +32,24 @@ export async function ValidateUserMiddleware(request, response, next) {
     }
 
     // Validate length of fields
-    if (firstname.length < 4 || firstname.length > 20) {
+    if (firstname.length < 3 || firstname.length > 50) {
       return response.status(400).json({
         success: false,
-        message: "first name must be between 4 and 20 characters",
+        message: "first name must be between 3 and 50 characters",
       });
     }
 
-    if (lastname.length < 4 || lastname.length > 20) {
+    if (lastname.length < 3 || lastname.length > 50) {
       return response.status(400).json({
         success: false,
-        message: "Last name must be between 4 and 20 characters",
+        message: "Last name must be between 3 and 50 characters",
       });
     }
 
-    if (username.length < 5 || username.length > 20) {
+    if (username.length < 3 || username.length > 50) {
       return response.status(400).json({
         success: false,
-        message: "Username must be between 5 and 20 characters",
+        message: "Username must be between 3 and 50 characters",
       });
     }
 

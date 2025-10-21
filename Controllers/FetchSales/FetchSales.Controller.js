@@ -3,18 +3,19 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function FetchSalesController(request, response) {
-  const { date } = request.query;
+  const { date,id } = request.query;
 
   try {
     const sales = await prisma.sale.findMany({
-      where: date
-        ? {
-            createdAt: {
-              gte: new Date(new Date(date).setHours(0, 0, 0, 0)),
-              lt: new Date(new Date(date).setHours(23, 59, 59, 999)),
-            },
-          }
-        : {},
+           where: {
+        ...(id && { id: (id) }), // if id is provided, filter by id
+        ...(date && {
+          createdAt: {
+            gte: new Date(new Date(date).setHours(0, 0, 0, 0)),
+            lt: new Date(new Date(date).setHours(23, 59, 59, 999)),
+          },
+        }),
+      },
       include: {
         customer: {
           select: {
@@ -36,6 +37,8 @@ export async function FetchSalesController(request, response) {
                 id: true,
                 productname: true,
                 price: true,
+                quantity:true,
+                createdAt:true,
               },
             },
           },
