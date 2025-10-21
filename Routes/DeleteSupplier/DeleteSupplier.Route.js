@@ -1,10 +1,11 @@
 import { Router } from "express";
 
 import { deleteSupplierController } from "../../Controllers/DeleteSupplier/DeleteSupplier.Controller.js";
-import { UserAuth } from "../../Auths/User/UserAuth.js";
+
+import AdminAuth from "../../Auths/Admin/AdminAuth.js";
 
 const router = Router();
 
-router.delete("/:id", UserAuth, deleteSupplierController);
+router.delete("/:id", AdminAuth, deleteSupplierController);
 
 export default router;

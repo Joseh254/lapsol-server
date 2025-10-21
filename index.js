@@ -40,6 +40,7 @@ import fetchpurchase from "./Routes/FetchPurchase/FetchPurchase.Route.js";
 import fetchsupplierpayment from "./Routes/FetchSupplierPayment/FetchSupplierPayment.Route.js";
 import sendmessage from "./Routes/SendMessage/SendMessage.Route.js";
 import fetchcustomerreturns from "./Routes/FetchCustomerReturn/FetchCustomerReturn.Route.js";
+import adduser from "./Routes/AddUser/AddUser.Route.js";
 
 dotenv.config();
 
@@ -60,6 +61,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/login", login);
 app.use("/api/signup", signup);
+app.use("/api/adduser", adduser);
 app.use("/api/reflesh", reflesh);
 app.use("/api/logout", logout);
 app.use("/api/fetchallUsers", fetchAllUsers);

@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-export async function SignUpMiddleware(request, response, next) {
-  const { email, firstname, lastname, username, phonenumber, password } =
+export async function ValidateUserMiddleware(request, response, next) {
+  const { email, firstname, lastname, username, phonenumber, password, role } =
     request.body;
 
   try {
@@ -13,7 +13,8 @@ export async function SignUpMiddleware(request, response, next) {
       !lastname ||
       !username ||
       !phonenumber ||
-      !password
+      !password ||
+      !role
     ) {
       return response.status(400).json({
         success: false,
