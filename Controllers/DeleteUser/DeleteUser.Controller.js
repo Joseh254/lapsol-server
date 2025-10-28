@@ -16,8 +16,22 @@ export async function deleteUserController(request, response) {
         .status(404)
         .json({ success: false, message: "User not found" });
     }
+// 1. Check if user is logged in
+if (request.user.id === id) {
+  return response.status(400).json({
+    success: false,
+    message: "You cannot delete your own account while logged in",
+  });
+}
 
-    // 2. Check for related records
+    // 3. Check if superadmin
+      if (user.role === "superadmin") {
+      return response.status(403).json({
+        success: false,
+        message: "Cannot delete a superadmin user",
+      });
+    }
+        // 4. Check for related records
     if (
       (user.sale && user.sale.length > 0) ||
       (user.purchases && user.purchases.length > 0) ||
@@ -30,7 +44,7 @@ export async function deleteUserController(request, response) {
       });
     }
 
-    // 3. Safe to delete
+    // 5. Safe to delete
     await prisma.users.delete({ where: { id } });
 
     return response.json({

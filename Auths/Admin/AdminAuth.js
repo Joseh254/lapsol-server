@@ -21,13 +21,16 @@ function AdminAuth(request, response, next) {
         });
       }
     });
+    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+    request.user = decoded;
+    next();
   } catch (error) {
     console.log("error admin auth", error.message);
     return response
       .status(500)
       .json({ success: false, message: "Internal server error" });
   }
-  next();
+  
 }
 
 export default AdminAuth;
