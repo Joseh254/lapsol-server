@@ -62,6 +62,15 @@ export async function UpdateSupplierrMiddleware(request, response, next) {
       });
     }
 
+    const supplierWithPhone = await prisma.customers.findFirst({
+      where: { phonenumber },
+    });
+    if (phonenumber && supplierWithPhone) {
+      return response.status(400).json({
+        success: false,
+        message: "phone number already taken",
+      });
+    }
     next();
   } catch (error) {
     console.log("error updating customer middleware", error.message);

@@ -3,12 +3,12 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function FetchSalesController(request, response) {
-  const { date,id } = request.query;
+  const { date, id } = request.query;
 
   try {
     const sales = await prisma.sale.findMany({
-           where: {
-        ...(id && { id: (id) }), // if id is provided, filter by id
+      where: {
+        ...(id && { id: id }), // if id is provided, filter by id
         ...(date && {
           createdAt: {
             gte: new Date(new Date(date).setHours(0, 0, 0, 0)),
@@ -37,8 +37,8 @@ export async function FetchSalesController(request, response) {
                 id: true,
                 productname: true,
                 price: true,
-                quantity:true,
-                createdAt:true,
+                quantity: true,
+                createdAt: true,
               },
             },
           },
