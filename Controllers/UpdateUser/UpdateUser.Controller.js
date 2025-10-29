@@ -10,6 +10,7 @@ export async function updateUserController(request, response) {
     phonenumber,
     password,
     profilepicture,
+    role,
   } = request.body;
 
   try {
@@ -37,6 +38,7 @@ export async function updateUserController(request, response) {
         ...(phonenumber && { phonenumber }),
         ...(password && { password }),
         ...(profilepicture && { profilepicture }),
+        ...(role && { role }),
       },
       select: {
         id: true,
@@ -46,6 +48,7 @@ export async function updateUserController(request, response) {
         lastname: true,
         phonenumber: true,
         profilepicture: true,
+        role: true,
       },
     });
 
