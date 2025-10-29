@@ -6,7 +6,15 @@ export async function UpdateUserMiddleware(request, response, next) {
   const { email, firstname, lastname, username, phonenumber, password } =
     request.body;
     const { id } = request.params;
+      const loggedInUser = request.user; 
   try {
+        if (loggedInUser?.id === id && request.body.role) {
+      return response.status(403).json({
+        success: false,
+        message: "You cannot change your own role.",
+      });
+    }
+    
     if (firstname && firstname.length < 4) {
       return response.status(400).json({
         success: false,
