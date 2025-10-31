@@ -1,4 +1,6 @@
-import { PrismaClient, CustomerType } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import pkg from "@prisma/client";
+const {CustomerType}=pkg
 const prisma = new PrismaClient();
 
 export async function FetchSuppliersController(req, res) {
