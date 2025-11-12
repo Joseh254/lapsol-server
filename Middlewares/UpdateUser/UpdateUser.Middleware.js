@@ -5,16 +5,16 @@ const prisma = new PrismaClient();
 export async function UpdateUserMiddleware(request, response, next) {
   const { email, firstname, lastname, username, phonenumber, password } =
     request.body;
-    const { id } = request.params;
-      const loggedInUser = request.user; 
+  const { id } = request.params;
+  const loggedInUser = request.user;
   try {
-        if (loggedInUser?.id === id && request.body.role) {
+    if (loggedInUser?.id === id && request.body.role) {
       return response.status(403).json({
         success: false,
         message: "You cannot change your own role.",
       });
     }
-    
+
     if (firstname && firstname.length < 4) {
       return response.status(400).json({
         success: false,
@@ -72,7 +72,7 @@ export async function UpdateUserMiddleware(request, response, next) {
       });
     }
     const userWithPhone = await prisma.users.findFirst({
-      where: { phonenumber ,NOT:{id} },
+      where: { phonenumber, NOT: { id } },
     });
     if (phonenumber && userWithPhone) {
       return response.status(400).json({
@@ -82,7 +82,7 @@ export async function UpdateUserMiddleware(request, response, next) {
     }
 
     const userWithEmail = await prisma.users.findFirst({
-      where: { email,NOT:{id} },
+      where: { email, NOT: { id } },
     });
     if (email && userWithEmail) {
       return response.status(400).json({

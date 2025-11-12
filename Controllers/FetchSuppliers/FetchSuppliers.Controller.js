@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import pkg from "@prisma/client";
-const {CustomerType}=pkg
+const { CustomerType } = pkg;
 const prisma = new PrismaClient();
 
 export async function FetchSuppliersController(req, res) {
@@ -19,7 +19,6 @@ export async function FetchSuppliersController(req, res) {
           type: { in: [CustomerType.SUPPLIER, CustomerType.BOTH] },
         },
         include: {
-          
           purchases: {
             include: {
               items: {

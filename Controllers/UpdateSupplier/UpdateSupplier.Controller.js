@@ -6,8 +6,7 @@ export async function UpdateSupplierController(request, response) {
   const { id } = request.params;
 
   try {
-
-        const existingCustomer = await prisma.customers.findUnique({
+    const existingCustomer = await prisma.customers.findUnique({
       where: { id },
       include: {
         sales: true,
@@ -24,7 +23,6 @@ export async function UpdateSupplierController(request, response) {
 
     // 2️⃣ Prevent changing type if it violates business logic
     if (type && type !== existingCustomer.type) {
-     
       // ❌ Can't change to CUSTOMER if they have purchases
       if (
         existingCustomer.purchases.length > 0 &&

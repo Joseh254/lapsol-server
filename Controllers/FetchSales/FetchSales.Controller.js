@@ -27,7 +27,9 @@ export async function FetchSalesController(request, response) {
             },
           },
         },
-        payments: { select: { id: true, amount: true, method: true, createdAt: true } },
+        payments: {
+          select: { id: true, amount: true, method: true, createdAt: true },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -53,7 +55,9 @@ export async function FetchSalesController(request, response) {
             },
           },
         },
-        payments: { select: { id: true, amount: true, method: true, createdAt: true } },
+        payments: {
+          select: { id: true, amount: true, method: true, createdAt: true },
+        },
       },
       orderBy: { createdAt: "desc" },
     });

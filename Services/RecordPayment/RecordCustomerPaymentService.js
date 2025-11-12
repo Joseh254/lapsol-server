@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import pkg from "@prisma/client";
-const {PaymentMethod}=pkg
+const { PaymentMethod } = pkg;
 const prisma = new PrismaClient();
 
 /**
@@ -12,7 +12,7 @@ export async function recordCustomerPaymentService({ saleId, amount, method }) {
   if (!amount || amount <= 0) throw new Error("Amount must be greater than 0");
   if (!method) throw new Error("Payment method is required");
 
-  const normalizedMethod = method.toUpperCase(); 
+  const normalizedMethod = method.toUpperCase();
   const validMethods = Object.keys(PaymentMethod);
 
   if (!validMethods.includes(normalizedMethod)) {

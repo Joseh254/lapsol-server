@@ -30,7 +30,6 @@ function AdminAuth(request, response, next) {
       .status(500)
       .json({ success: false, message: "Internal server error" });
   }
-  
 }
 
 export default AdminAuth;

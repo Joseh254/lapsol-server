@@ -52,15 +52,22 @@ export async function RefreshTokenController(request, response) {
     });
 
     // Optional: rotate refresh token (new long-lived token)
-    const newRefreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, {
-      expiresIn: "7d",
-      algorithm: "HS256",
-    });
+    const newRefreshToken = jwt.sign(
+      { id: user.id },
+      process.env.JWT_REFRESH_SECRET,
+      {
+        expiresIn: "7d",
+        algorithm: "HS256",
+      },
+    );
 
     // Save new refresh token in DB and delete old one
     await prisma.refreshToken.update({
       where: { id: tokenRecord.id },
-      data: { token: newRefreshToken, expiresAt: new Date(Date.now() + 7*24*60*60*1000) }
+      data: {
+        token: newRefreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      },
     });
 
     // Set cookies

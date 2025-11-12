@@ -50,7 +50,7 @@ export async function LoginController(request, response) {
       {
         expiresIn: "7d",
         algorithm: "HS256",
-      }
+      },
     );
 
     // Store refresh token in RefreshToken table

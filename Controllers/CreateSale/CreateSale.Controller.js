@@ -74,7 +74,7 @@ export async function CreateSale(request, response) {
       }
 
       return createdSale;
-    }); 
+    });
 
     // 💰 If sale is not on credit, record payment via the service
     if (type.toLowerCase() !== "credit") {

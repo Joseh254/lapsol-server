@@ -35,8 +35,6 @@ export async function UpdateCustomerController(request, response) {
             "Cannot change this customer to SUPPLIER because they already have sales records.Consider changing to Both",
         });
       }
-
- 
     }
 
     const updatedCustomer = await prisma.customers.update({
