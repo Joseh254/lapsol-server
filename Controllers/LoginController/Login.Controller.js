@@ -39,7 +39,7 @@ export async function LoginController(request, response) {
 
     // Generate short-lived access token
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "1d",
+      expiresIn: "15m",
       algorithm: "HS256",
     });
 
@@ -50,27 +50,33 @@ export async function LoginController(request, response) {
       {
         expiresIn: "7d",
         algorithm: "HS256",
-      },
+      }
     );
 
-    // Store refresh token in DB
-    await prisma.users.update({
-      where: { id: userExists.id },
-      data: { refreshToken },
+    // Store refresh token in RefreshToken table
+    await prisma.refreshToken.create({
+      data: {
+        token: refreshToken,
+        userId: userExists.id,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      },
     });
+
+    // Set cookies
     response.cookie("access_token", accessToken, {
       httpOnly: true,
-      secure: isProduction, // ✅ only true in production
-      sameSite: isProduction ? "None" : "Lax", // ✅ safe in dev
-      maxAge: 15 * 60 * 1000,
+      secure: isProduction,
+      sameSite: isProduction ? "None" : "Lax",
+      maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
     response.cookie("refresh_token", refreshToken, {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? "None" : "Lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
+
     response.status(200).json({
       success: true,
       message: "Logged in successfully",
