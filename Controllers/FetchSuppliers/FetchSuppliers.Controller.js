@@ -19,6 +19,7 @@ export async function FetchSuppliersController(req, res) {
           type: { in: [CustomerType.SUPPLIER, CustomerType.BOTH] },
         },
         include: {
+          
           purchases: {
             include: {
               items: {

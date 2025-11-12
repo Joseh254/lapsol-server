@@ -6,6 +6,39 @@ export async function UpdateCustomerController(request, response) {
   const { id } = request.params;
 
   try {
+    const existingCustomer = await prisma.customers.findUnique({
+      where: { id },
+      include: {
+        sales: true,
+        purchases: true,
+      },
+    });
+
+    if (!existingCustomer) {
+      return response.status(404).json({
+        success: false,
+        message: "Customer not found",
+      });
+    }
+
+    // 2️⃣ Prevent changing type if it violates business logic
+    if (type && type !== existingCustomer.type) {
+      // ❌ Can't change to SUPPLIER if they have sales
+      if (
+        existingCustomer.sales.length > 0 &&
+        type === "SUPPLIER" &&
+        existingCustomer.type !== "BOTH"
+      ) {
+        return response.status(400).json({
+          success: false,
+          message:
+            "Cannot change this customer to SUPPLIER because they already have sales records.Consider changing to Both",
+        });
+      }
+
+ 
+    }
+
     const updatedCustomer = await prisma.customers.update({
       where: { id },
       data: {

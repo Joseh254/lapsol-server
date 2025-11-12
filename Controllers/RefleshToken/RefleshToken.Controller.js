@@ -49,8 +49,8 @@ export async function RefreshTokenController(request, response) {
       response.cookie("access_token", newAccessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
-        maxAge: 15 * 60 * 1000, // 15 minutes
+        sameSite: "None",
+        maxAge: 370 * 60 * 1000, 
       });
 
       return response.json({ success: true, accessToken: newAccessToken });

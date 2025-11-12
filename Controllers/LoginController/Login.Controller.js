@@ -39,7 +39,7 @@ export async function LoginController(request, response) {
 
     // Generate short-lived access token
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "15m",
+      expiresIn: "1d",
       algorithm: "HS256",
     });
 

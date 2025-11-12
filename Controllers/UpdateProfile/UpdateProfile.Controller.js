@@ -32,6 +32,7 @@ export async function UpdateProfileController(request, response) {
         lastname: true,
         phonenumber: true,
         profilepicture: true,
+        role:true
       },
     });
 

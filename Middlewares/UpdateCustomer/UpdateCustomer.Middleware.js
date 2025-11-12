@@ -4,7 +4,11 @@ const prisma = new PrismaClient();
 
 export async function UpdateCustomerMiddleware(request, response, next) {
   const { name, location, details, phonenumber } = request.body;
+  const {id } = request.params
   try {
+    if(!id){return response.status(404).json({success:false,message:"Id is not provided"})}
+    const customerExists = await prisma.customers.findFirst({where:{id}})
+    if(!customerExists){return response.status(404).json({success:false,message:"Customer Not found"})}
     if (name && name.length < 4) {
       return response.status(400).json({
         success: false,
