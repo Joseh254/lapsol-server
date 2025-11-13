@@ -44,6 +44,7 @@ import adduser from "./Routes/AddUser/AddUser.Route.js";
 import fetchallusers from "./Routes/FetchAllUsers/FetchAllUsers.Route.js";
 import updateuser from "./Routes/UpdateUser/UpdateUser.Route.js";
 import deleteuser from "./Routes/DeleteUser/DeleteUser.Route.js";
+import sendstkpush from "./Mpesa/Routes/SendStkPushRoute/SendStkPush.Route.js";
 
 dotenv.config();
 
@@ -102,7 +103,9 @@ app.use("/api/recordpurchasepayment", recordpurchasepayment);
 app.use("/api/addsupplier", addsupplier);
 app.use("/api/deletesupplier", deletesupplier);
 app.use("/api/deleteuser", deleteuser);
+// external utilities
 app.use("/api/sendmessage", sendmessage);
+app.use("/api/sendstkpush", sendstkpush);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);

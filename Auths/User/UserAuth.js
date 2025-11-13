@@ -5,7 +5,7 @@ export function UserAuth(request, response, next) {
 
   try {
     if (!accessToken) {
-      return response 
+      return response
         .status(401)
         .json({ success: false, message: "Please log in first to continue" });
     }

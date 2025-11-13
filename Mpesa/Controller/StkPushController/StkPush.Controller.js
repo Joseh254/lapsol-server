@@ -23,9 +23,8 @@ export async function sendStkPush(request, response) {
       ("0" + date.getSeconds()).slice(-2);
 
     const stk_password = Buffer.from(
-      process.env.SHORTCODE + process.env.PASSKEY + timestamp,
+      process.env.SHORTCODE + process.env.PASS_KEY + timestamp,
     ).toString("base64");
-
     const requestBody = {
       BusinessShortCode: process.env.SHORTCODE,
       Password: stk_password,
@@ -47,7 +46,13 @@ export async function sendStkPush(request, response) {
       },
     });
 
-    return response.status(200).json({ success: true, data: stkResponse.data });
+    return response
+      .status(200)
+      .json({
+        success: true,
+        data: stkResponse.data,
+        message: `Stk sent to ${phoneNumber}`,
+      });
   } catch (error) {
     console.log(error.message);
 
