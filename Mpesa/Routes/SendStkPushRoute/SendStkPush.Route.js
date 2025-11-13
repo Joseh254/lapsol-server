@@ -5,5 +5,5 @@ import { UserAuth } from "../../../Auths/User/UserAuth.js";
 import { ValidateInputsMiddleware } from "../../Middleware/ValidateInputsMiddleware/ValidateInputs.Middleware.js";
 const router = Router();
 
-router.post("/", ValidateInputsMiddleware, GetTokenMiddleware, sendStkPush);
+router.post("/",UserAuth, ValidateInputsMiddleware, GetTokenMiddleware, sendStkPush);
 export default router;
